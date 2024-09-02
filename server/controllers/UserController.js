@@ -341,15 +341,24 @@ const updateUserProfile = async(req,res)=>{
 
 const markNotificationRead = async(req,res)=>{
     try {
-        const {userId} = req.user
+        console.log(req.body);
+        const {userId, isAdmin, isUstadz} = req.user
         const {isReadType, id}  = req.body
 
         if(isReadType === 'all') {
-            await notificationModel.updateMany(
-                {team: userId, isRead: { $nin: [userId] }},
-                { $push: {isRead: userId} },
-                { new: true }
-            )
+            if(isAdmin || isUstadz) {
+                await notificationModel.updateMany(
+                    {leader: userId, isRead: { $nin: [userId] }},
+                    { $push: {isRead: userId} },
+                    { new: true }
+                )
+            } else {
+                await notificationModel.updateMany(
+                    {team: userId, isRead: { $nin: [userId] }},
+                    { $push: {isRead: userId} },
+                    { new: true }
+                )
+            }
         } else if(isReadType == 'seen') {
             await notificationModel.updateMany(
                 {isSeen: { $nin: [userId] }},
