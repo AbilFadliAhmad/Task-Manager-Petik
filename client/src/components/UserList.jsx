@@ -59,25 +59,24 @@ const UserList = ({ team, setTeam, leader }) => {
     <Loading />
   ) : (
     <div className="">
-      <Listbox value={selectedAdmin} onChange={handleChange} className="" multiple>
+      <Listbox value={selectedAdmin} onChange={handleChange} className="relative" multiple>
         <div className=''>
+        <p className={`absolute left-2 top-4 text-gray-500 ${selectedAdmin.length > 0 ? 'hidden' : ''}`}>Member...</p>
           <ListboxButton disabled={pengguna.isAdmin ? true : false} className={'w-full cursor-pointer pl-3 pr-10 text-left px-3 py-2.5 2xl:py-3 sm:text-sm overflow-auto disabled:cursor-not-allowed'} onClick={onCheck}>
             <p className='text-sm'>
-              {/* {selectedAdmin.map(item=>item.name).join(', ')} */}
               {selectedAdmin.length > 0 ? selectedAdmin.map(item=>item.name).join(', ') : <FaRegCircleUser className='w-full h-full pr-[20rem] pb-4 invisible' />}
-              
             </p>
           </ListboxButton>
-          <ListboxOptions className="z-50 absolute mt-2 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm overflow-y-auto w-[77%] border-2 border-gray-800/4">
+          <ListboxOptions className="z-50 absolute mt-2 max-h-60  overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm overflow-y-auto sm:w-[17rem] w-[13rem] border-2 border-gray-800/4">
             {users?.map((user, index) => (
               <ListboxOption
                 key={index}
                 value={user}
-                className={({ active, selected }) => `relative cursor-default select-none py-2 pl-10 pr-4. ${active ? 'bg-amber-100 text-amber-900' : 'text-gray-500'} ${selected ? 'text-red-900' : ''} `}
+                className={({ active, selected }) => `relative cursor-default select-none py-2 pl-10 ${active ? 'bg-amber-100 text-amber-900' : 'text-gray-500'} ${selected ? 'text-red-900' : ''} `}
               >
                 {({ selected }) => (
                   <div>
-                    <div className={clsx('flex items-center gap-2  truncate', selected ? 'font-medium' : 'font-normal')}>
+                    <div className={clsx('flex items-center gap-2 truncate', selected ? 'font-medium' : 'font-normal')}>
                       {user?.image?.length > 1 
                       ? <div className='w-7 h-7 rounded-full text-white flex items-center justify-center'>
                         <img src={user?.image} alt={user?.name} className='w-full h-full object-cover rounded-full' />

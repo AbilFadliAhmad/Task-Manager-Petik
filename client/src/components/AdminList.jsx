@@ -65,12 +65,12 @@ const AdminList = ({ leader, setLeader }) => {
               {leader.length > 0 ? <FaRegCircleUser className="w-14 h-14 absolute right-0 -top-12 opacity-0" /> : <FaRegCircleUser className="w-8 h-8" />}
             </span>
           </ListboxButton>
-          <ListboxOptions className="z-50 absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm overflow-y-auto w-[70%] border-2 border-gray-800/4">
+          <ListboxOptions className={`z-50 absolute ${leader?.length == 0 ? 'mt-1' : leader?.length == 1 ? '-mt-12' : '-mt-10'}  max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm overflow-y-auto w-[70%] border-2 border-gray-800/4`}>
             {admin?.map((user, index) => (
               <ListboxOption
                 key={index}
                 value={user}
-                className={({ active, selected }) => `relative cursor-default select-none py-2 pl-10 pr-4. ${active ? 'bg-amber-100 text-amber-900' : 'text-gray-500'} ${selected ? 'text-red-900' : ''} `}
+                className={({ active, selected }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-amber-100 text-amber-900' : 'text-gray-500'} ${selected ? 'text-red-900' : ''} `}
               >
                 {({ selected }) => (
                   <div>
