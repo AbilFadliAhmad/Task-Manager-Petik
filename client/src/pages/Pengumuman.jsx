@@ -17,7 +17,7 @@ const Pengumuman = () => {
   const { data, isLoading, refetch } = useDropdownQuery();
   const [input, setInput] = React.useState('');
   const [ sendNotification, { isLoading: isLoadingSend } ] = useSendNotificationMutation();
-  console.log(selectedMember,'selece')
+  const [loading, setLoading] = React.useState(false)
 
   const handleCheckbox = (e) => {
     setCheck(e.target.value);
@@ -30,19 +30,32 @@ const Pengumuman = () => {
 
   const handleKirim = async()=>{
     try {
+      let i;
       if(check == 'Custom') {
-        const i = toast.loading('Sedang mengirim...')
+        setLoading(true)
+        i = toast.loading('Sedang mengirim...')
         await sendNotification({users:selectedMember, isi:input}).unwrap()
         toast.dismiss(i)
         toast.success('Kamu berhasil')
+        setLoading(false)
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500);
       } else {
-        const i = toast.loading('Sedang mengirim...')
+        setLoading(true)
+        i = toast.loading('Sedang mengirim...')
         await sendNotification({users:users, isi:input}).unwrap()
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500);
+        setLoading(false)
         toast.dismiss(i)
         toast.success('Kamu juga berhasil')
       }
     } catch (error) {
+      setLoading(false)
       console.log(error)
+      toast.dismiss(i)
       toast.error(error?.data?.message || error.message)
     }
   }

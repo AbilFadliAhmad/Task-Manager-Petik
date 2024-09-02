@@ -71,7 +71,7 @@ const Trash = () => {
       .then(()=>setOpen(false))
       .then(()=>setTimeout(() => {
         window.location.reload();
-      }, 1100))
+      }, 1800))
     } catch (error) {
       console.log(error);
       toast.error('Gagal Menghapus Tugas')

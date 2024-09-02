@@ -428,6 +428,8 @@ const deleteRestoreTask = async (req, res) => {
     const { id } = req.params;
     const {userId} = req.user
     const user = await userModel.findById(userId)
+    const task = id === String(undefined) ? null : await taskModel.findById(id);
+    const tasks = await taskModel.find({ isTrashed: true });
     const { actionType } = req.query;
 
     if (actionType === "delete") {
@@ -459,7 +461,7 @@ const deleteRestoreTask = async (req, res) => {
       textLogDate:String(tanggalIndo(new Date(Date.now()))),
       by: userId,
       rangkuman: `menghapus/mengembalikan tugas`,
-      textLog: `${user.name} telah menghapus/mengembalikan ${id.length > 1 ? `tugas berjudul: ${await taskModel.findById(id).title}` : `semua tugas yang terdiri dari ${(await taskModel.find({ isTrashed: true })).map(task=>task.title).join(', ')}` } `,
+      textLog: `${user.name} telah menghapus/mengembalikan ${id !== String(undefined) ? `tugas berjudul: ${task?.title}` : `semua tugas yang terdiri dari ${tasks.map(task=>task.title).join(', ')}` } `,
     })
     
 

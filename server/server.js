@@ -13,7 +13,7 @@ import { connectCloudinary } from './config/Cloudinary.js'
 const app = express()
 const port = process.env.PORT || 4000
 app.use(cors({
-  origin: ["http://localhost:3000", "http://localhost:3001"],
+  origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002"],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }))
