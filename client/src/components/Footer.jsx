@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 
-const Footer = ({jumlahHalaman, halaman, setJumlahHalaman, tasks, itemPerPage, ukuran}) => {
+const Footer = ({jumlahHalaman, halaman}) => {
 
 
 

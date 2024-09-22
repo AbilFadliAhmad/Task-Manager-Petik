@@ -1,6 +1,6 @@
 import React from 'react';
 import { MdOutlineSearch } from 'react-icons/md';
-import { setOpenSidebar, setSeacrhList } from '../redux/slices/authSlice';
+import { setOpenSidebar } from '../redux/slices/authSlice';
 import { UserAvatar, NotificationPanel } from '.';
 import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
@@ -13,7 +13,13 @@ const Navbar = () => {
 
   const handleCLick = async() => {
     await localStorage.setItem('search', input)
-    window.location.reload()
+    const params = new URLSearchParams(window.location.search);
+        if(params.has('halaman')){
+            params.set('halaman', 1)
+        } else {
+            params.append('halaman', 1)
+        }
+        window.location.search = params.toString();
   }
 
   const handleKeyDown = (e) => {

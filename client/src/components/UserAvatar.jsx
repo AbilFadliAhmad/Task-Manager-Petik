@@ -1,9 +1,9 @@
-import { Menu, MenuItems, MenuItem, MenuButton, Transition } from '@headlessui/react';
-import { Fragment, useState } from 'react';
+import { Menu, MenuItems, MenuItem, MenuButton } from '@headlessui/react';
+import { useState } from 'react';
 import { FaUser, FaUserLock } from 'react-icons/fa';
 import { IoLogOutOutline } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../redux/slices/authSlice';
 import { getInitials } from '../utils';
 import { useLogoutMutation } from '../redux/slices/authApiSlice';
@@ -43,7 +43,7 @@ const UserAvatar = () => {
             <div className="p-4 ">
               <MenuItem>
                 {({ active }) => (
-                  <button onClick={() => setOpen(true)} className="text-gray-700 group flex w-full items-center rounded-md px-2 py-2 text-base">
+                  <button onClick={() => setOpen(true)} className={`${active ? 'bg-gray-300' : ''} text-gray-700 group flex w-full items-center rounded-md px-2 py-2 text-base`}>
                     <FaUser className="mr-2" aria-hidden="true" />
                     Profile
                   </button>
@@ -52,7 +52,7 @@ const UserAvatar = () => {
 
               <MenuItem>
                 {({ active }) => (
-                  <button onClick={() => setOpenPassword(true)} className={`tetx-gray-700 group flex w-full items-center rounded-md px-2 py-2 text-base`}>
+                  <button onClick={() => setOpenPassword(true)} className={`tetx-gray-700 ${active ? 'bg-gray-300' : ''} group flex w-full items-center rounded-md px-2 py-2 text-base`}>
                     <FaUserLock className="mr-2" aria-hidden="true" />
                     Change Password
                   </button>
@@ -61,7 +61,7 @@ const UserAvatar = () => {
               {user.isAdmin && (
                 <MenuItem>
                   {({ active }) => (
-                    <Link to="/announcement" className={`text-black group flex w-full items-center rounded-md px-2 py-2 text-base`}>
+                    <Link to="/announcement" className={`text-black group flex w-full items-center ${active ? 'bg-gray-300' : ''} rounded-md px-2 py-2 text-base`}>
                       <HiSpeakerphone className="mr-2 " aria-hidden="true" />
                       Pengumuman
                     </Link>
@@ -70,7 +70,7 @@ const UserAvatar = () => {
               )}
               <MenuItem>
                 {({ active }) => (
-                  <button onClick={logoutHandler} className={`text-red-600 group flex w-full items-center rounded-md px-2 py-2 text-base`}>
+                  <button onClick={logoutHandler} className={`text-red-600 group ${active ? 'bg-gray-300' : ''} flex w-full items-center rounded-md px-2 py-2 text-base`}>
                     <IoLogOutOutline className="mr-2" aria-hidden="true" />
                     Logout
                   </button>
