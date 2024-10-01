@@ -434,11 +434,12 @@ const deleteRestoreTask = async (req, res) => {
 
     if (actionType === "delete") {
       const taskPublic = await taskModel.findById(id);
-      await cloudinary.uploader.destroy(taskPublic.public_id);
+      console.log(taskPublic?.public_id ?? null, 'taskPublic');
+      taskPublic?.public_id ? await cloudinary.uploader.destroy(taskPublic.public_id) : null
       await taskModel.findByIdAndDelete(id);
     } else if (actionType === "deleteAll") {
       const tasks = await taskModel.find({ isTrashed: true });
-      tasks.map(async(item)=>await cloudinary.uploader.destroy(item.public_id))
+      tasks.map(async(item)=> item?.public_id ? await cloudinary.uploader.destroy(item.public_id) : null)
       await taskModel.deleteMany({ isTrashed: true });
     } else if (actionType === "restore") {
       const resp = await taskModel.findById(id);
