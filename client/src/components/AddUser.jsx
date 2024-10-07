@@ -135,7 +135,7 @@ const AddUser = ({ open, setOpen, userData }) => {
                 required: "Email Address is required!",
               })}
               error={errors.email ? errors.email.message : ""}
-              status={user}
+              // status={user}
             />
 
             {!userData || user.isAdmin && (

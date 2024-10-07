@@ -15,7 +15,8 @@ const tanggalIndo = (date) => {
 const createTask = async (req, res) => {
   try {
     const { userId, leader:ustadz } = req.user;
-    const { title, team=[], stage, date, priority, leader=[] } = req.body;
+    const { title, team=[], stage, date, priority, leader=[], deadline=[], timer = false } = req.body;
+    const deadlineTime = Date.now() + deadline * 60 * 1000
     const image = req.file || req.body.image;
     const tanggal = new Date(String(date))
     const user = await userModel.findById(userId);
@@ -42,6 +43,8 @@ const createTask = async (req, res) => {
       activities: activity,
       assets: gambarCloudinary?.secure_url ?? [],
       public_id: gambarCloudinary?.public_id ?? '',
+      ...(deadline.length > 0 && timer ? { deadline: deadlineTime } : {}),
+      timer,
     });
 
     
@@ -101,6 +104,19 @@ const createTask = async (req, res) => {
     res.status(401).json({ success: false, message: error.message, inti: 'Gagal membuat task, silahkan coba lagi' });
   }
 };
+
+const isExpiredTask = async (req, res) => {
+  try {
+    const {id, isExpired} = req.body
+    const task = await taskModel.findById(id)
+    task.isExpired = isExpired
+    await task.save()
+    res.status(200).json({ success: true, message: 'Berhasil mengupdate isExpired task' });
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ success: false, message: error.message, inti: 'Gagal Mengupdate isExpired task, silahkan coba lagi' });
+  }
+}
 const duplicateTask = async (req, res) => {
   try {
     const {userId} = req.user
@@ -175,7 +191,7 @@ const postTaskActivity = async (req, res) => {
       textLogDate:String(tanggalIndo(new Date(Date.now()))),
       by: userId,
       rangkuman: `Aktivitas baru dibuat saat ${String(tanggalIndo(new Date(Date.now())))}`,
-      textLog: `Aktivitas baru yang dibuat oleh ${user.name} telah ditambahkan di tugas yang berjudul: ${task.title}`,
+      textLog: `${user.name} telah menambahkan aktivitas bertipe ${type} di tugas yang berjudul: ${task.title}`,
     })
 
     res.status(200).json({ success: true, message: 'Aktifitas Telah Dikirim.' });
@@ -232,6 +248,8 @@ const dashboardStatistics = async (req, res) => {
       return result;
     }, {});
 
+    // Calculate total Expired tasks
+    const expiredTasks = allTasks.filter(task => task.isExpired);
 
     // Group tasks by priority
     const groupData = Object.entries(
@@ -265,6 +283,7 @@ const dashboardStatistics = async (req, res) => {
       last10Task,
       tasks: groupTaskks,
       graphData: groupData,
+      expiredTasks: expiredTasks,
       users: isAdmin ? await userModel.find() : isUstadz ? HasilUstadz : hasilMurid
     };
 
@@ -311,10 +330,12 @@ const updateTask = async (req, res) => {
   try {
     const { userId, leader:ustadz, isAdmin:isLeader } = req.user;
     const user = await userModel.findById(userId);
-    const { title, date, team=[], stage, priority, assets=[], leader=[], id } = req.body;
+    const { title, date, team=[], stage, priority, assets=[], leader=[], id, timer = null, deadline=[] } = req.body;
     const notifArray = await notificationModel.find({task:id})
     const notif = notifArray[0]
     const image = req.file || req.body.image;
+    const deadlineTime = deadline.length > 0 ? Date.now() + deadline * 60 * 1000 : undefined
+    const defaultDeadline = Date.now() + 78893280 * 60 * 1000
     
     const task = await taskModel.findById(id);
     const dataPrevTask = JSON.parse(JSON.stringify(task))
@@ -322,7 +343,7 @@ const updateTask = async (req, res) => {
     const dataHasilPopulatePrevTask = JSON.parse(JSON.stringify(dataHasilPopulatePrevTask2)) // fungsi dari syntax seperti ini agar data independen
     let teamNewTask;
     let leaderNewTask;
-
+    
     if(!task) return res.json({success: false, message: 'Tugas tidak ditemukan'})
       if(image !== task.assets[0]) {
         await cloudinary.uploader.destroy(task.public_id);
@@ -331,7 +352,9 @@ const updateTask = async (req, res) => {
         task.public_id = imageCloudinary.public_id
       }
       
-    task.title = title;
+      task.title = title;
+      task.timer = timer == null ? task.timer : timer;
+      task.deadline = deadline.length > 0 && timer ? deadlineTime : timer == null ? task.deadline : defaultDeadline;
     task.date = date;
     task.priority = priority.toLowerCase();
     // task.assets = assets;
@@ -422,6 +445,24 @@ const updateTask = async (req, res) => {
   }
 };
 
+const updateTaskStage = async (req, res) => {
+  try {
+    const { stage=false, id, batas=[], timer=false } = req.body;
+    const deadlineTime = Date.now() + Number(batas) * 60 * 1000
+    const task = await taskModel.findById(id);
+    task.stage = stage ? stage : task.stage;
+    task.deadline = batas.length > 0 ? deadlineTime : task.deadline;
+    task.timer = timer;
+    await task.save();
+    res
+      .status(200)
+      .json({ success: true, message: "Tugas berhasil diperbarui." });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ success: false, message: error.message, inti: "Gagal Memperbarui Tugas" });
+  }
+};
+
 
 const deleteRestoreTask = async (req, res) => {
   try {
@@ -434,7 +475,6 @@ const deleteRestoreTask = async (req, res) => {
 
     if (actionType === "delete") {
       const taskPublic = await taskModel.findById(id);
-      console.log(taskPublic?.public_id ?? null, 'taskPublic');
       taskPublic?.public_id ? await cloudinary.uploader.destroy(taskPublic.public_id) : null
       await taskModel.findByIdAndDelete(id);
     } else if (actionType === "deleteAll") {
@@ -453,6 +493,7 @@ const deleteRestoreTask = async (req, res) => {
       );
     } else if (actionType == "deleteTemporary") {
       const resp = await taskModel.findById(id);
+      console.log('response', resp)
       resp.isTrashed = true;
       resp.save()
     }
@@ -487,7 +528,7 @@ const listTasks = async(req,res)=>{
       const response = await taskModel.find(object).populate('team', 'name title role email isActive image isAdmin isUstadz leader').populate('leader', 'name image email role title').sort({ _id: -1 })
       return res.status(200).json({success:true, message: "Berhasil mengambil data Tasks", data: response})
     } else if(isUstadz) {
-      const response = await taskModel.find({leader:userId}).populate('team', 'name title role email isActive image isAdmin isUstadz leader').populate('leader', 'name image email role title').sort({ _id: -1 })
+      const response = await taskModel.find({leader:userId}).find(object).populate('team', 'name title role email isActive image isAdmin isUstadz leader').populate('leader', 'name image email role title').sort({ _id: -1 })
       return res.status(200).json({success:true, message: "Berhasil mengambil data Tasks", data: response})
     } else {
       const response = await taskModel.find({team:userId}).populate('team', 'name title role email isActive image isAdmin isUstadz leader').populate('leader', 'name image email role title').sort({ _id: -1 })
@@ -495,7 +536,7 @@ const listTasks = async(req,res)=>{
     }
   } catch (error) {
     console.log(error);
-    res.status(401).json({success:false, message: error.message, inti:"Gagal mendapatkan tugas"})
+    res.status(401).json({success:false, message: error.message, inti:"Gagal mengambil data tugas, coba logout dan login ulang"})
     
   }
 }
@@ -512,4 +553,4 @@ const resetSemua = async(req,res)=>{
   }
 }
 
-export { createTask, duplicateTask, postTaskActivity, dashboardStatistics, getTask, updateTask, deleteRestoreTask, listTasks, resetSemua };
+export { createTask, duplicateTask, postTaskActivity, dashboardStatistics, getTask, updateTask, updateTaskStage, deleteRestoreTask, listTasks, isExpiredTask, resetSemua };

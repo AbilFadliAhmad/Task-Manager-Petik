@@ -5,6 +5,7 @@ const initialState = {
   isSidebarOpen: true,
   location: false,
   search:localStorage.getItem('search') || '',
+  startCount: true
 };
 
 const authSlice = createSlice ({
@@ -24,11 +25,15 @@ const authSlice = createSlice ({
         },
         setChangeLocation: (state, action)=>{
             state.location = action.payload
-        }, setSeacrhList: (state, action)=>{
+        }, 
+        setSeacrhList: (state, action)=>{
             state.search = action.payload
+        }, 
+        setStartCount: (state, action)=>{
+            state.startCount = action.payload
         }
     }
 })
 
-export const { setCredentials, logout, setOpenSidebar, setChangeLocation, setSeacrhList } = authSlice.actions;
+export const { setCredentials, logout, setOpenSidebar, setChangeLocation, setSeacrhList, setStartCount } = authSlice.actions;
 export default authSlice.reducer

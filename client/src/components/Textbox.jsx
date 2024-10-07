@@ -28,6 +28,9 @@ import clsx from 'clsx';
 
 const Textbox = ({type, name, placeholder, register, error, className, label, status})=>{
   const value = status ? status : null
+  const handleChange = (e) => {
+    const {value} = e.target
+  }
     return (
         <div className="w-full flex flex-col gap-1">
         {label && <label htmlFor={name} className="text-slate-800">{label}</label>}

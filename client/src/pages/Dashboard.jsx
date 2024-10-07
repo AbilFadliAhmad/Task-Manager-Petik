@@ -13,6 +13,7 @@ import clsx from 'clsx'
 // import { summary } from '../assets/data';
 import {Card, Chart, Loading2, TaskTable, UserTable} from '../components';
 import { useGetDashboardQuery } from '../redux/slices/DashboardApiSlice';
+import { BiSolidTimer } from "react-icons/bi";
 import toast from 'react-hot-toast';
 
 
@@ -44,22 +45,29 @@ const Dashboard = () => {
     {
       _id: "3",
       label: "TASK IN PROGRESS ",
-      total: summary?.tasks ? summary?.tasks["in progress"] :  0,
+      total: summary?.tasks ? summary?.tasks["in progress"] ?? 0 :  0,
       icon: <LuClipboardEdit />,
       bg: "bg-[#f59e0b]",
     },
     {
       _id: "4",
       label: "TODOS",
-      total: summary?.tasks ? summary?.tasks["todo"] : 0,
+      total: summary?.tasks?.todo ??  0,
       icon: <FaArrowsToDot />,
       bg: "bg-blue-600",
+    },
+    {
+      _id: "5",
+      label: "EXPIRED",
+      total: summary?.expiredTasks?.length ?? 0,
+      icon: <BiSolidTimer className='text-xl' />,
+      bg: "bg-red-900",
     },
   ];
 
   return isLoading ? <Loading2 /> : (
     <div className='h-full p-4'>
-      <div className='grid grid-cols-1 md:grid-cols-4 gap-5'>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-5'>
         {
           stats?.map(({icon,bg, label, total}, index) =>(
             <Card key={index} icon={icon} bg={bg} label={label} count={total} />

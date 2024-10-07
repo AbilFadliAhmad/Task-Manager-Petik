@@ -151,7 +151,7 @@ const TaskDetails = () => {
             </div>
           </>
         ) : (
-          <div><Activities activity={task.activities} id={id} /></div>
+          <div><Activities activity={task.activities} stage={task?.stage} id={id} /></div>
         )}
       </Tabs>
     </div>

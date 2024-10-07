@@ -1,8 +1,13 @@
-import toast from "react-hot-toast";
+import toast from 'react-hot-toast';
 
 export const getInitials = (fullname) => {
-  return fullname.split(' ').slice(0, 2).map((name) => name[0]).join('').toUpperCase(); 
-}
+  return fullname
+    .split(' ')
+    .slice(0, 2)
+    .map((name) => name[0])
+    .join('')
+    .toUpperCase();
+};
 
 export const formatDate = (date) => {
   // Get the month, day, and year
@@ -45,10 +50,10 @@ export const TASK_TYPE = {
 export const BGS = ['bg-green-600', 'bg-yellow-600', 'bg-blue-600', 'bg-green-600'];
 export const Border = ['border-t-green-600', 'border-t-yellow-600', 'border-t-blue-600', 'border-t-green-600'];
 
-export const act_types = ['Started', 'Completed', 'In Progress', 'Commented', 'Bug', 'Assigned'];
+export const act_types = ['Assigned', 'Started', 'In Progress', 'Commented', 'Bug', 'Completed'];
 export const LISTS = ['TODO', 'IN PROGRESS', 'COMPLETED'];
 export const PRIORITY = ['HIGH', 'MEDIUM', 'NORMAL'];
-export const loadingDatab = async(data, success, error, durationSuccess)=>{
+export const loadingDatab = async (data, success, error, durationSuccess) => {
   toast.promise(
     data,
     {
@@ -66,4 +71,4 @@ export const loadingDatab = async(data, success, error, durationSuccess)=>{
       },
     }
   );
-}
+};

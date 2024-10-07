@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiTwotoneFolderOpen } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
@@ -11,7 +11,8 @@ import { useDeleteTaskMutation, useDuplicateTaskMutation, useListTaskMutation } 
 import { useListQuery } from "../redux/slices/ActionApiSlice";
 import toast from "react-hot-toast";
 import { loadingDatab } from "../utils";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setStartCount } from "../redux/slices/authSlice";
 
 
 const TaskDialog = ({task}) => {
@@ -25,6 +26,15 @@ const TaskDialog = ({task}) => {
   const [deleteTask] = useDeleteTaskMutation()
   const [refetch] = useListTaskMutation()
   const {user} = useSelector(state=>state.auth)
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+    if(openEdit){
+      dispatch(setStartCount(false))
+    } else if (!openEdit){
+      dispatch(setStartCount(true))
+    }
+  }, [openEdit])
   
   const duplicateHanlder = async() => {
     try {

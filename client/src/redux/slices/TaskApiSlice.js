@@ -56,6 +56,32 @@ export const TaskApiSlice = apiSlice.injectEndpoints({
             })
         }),
 
+        updateExpired:builder.mutation({
+            query: (data) => ({
+                url: `${TASK_URL}/is-expired`,
+                method: "PUT",
+                body: data,
+                credentials: "include",
+            })
+        }),
+
+        updateStageTask:builder.mutation({
+            query: (data) => ({
+                url: `${TASK_URL}/update-stage`,
+                method: "PUT",
+                body: data,
+                credentials: "include",
+            })
+        }),
+        updateExpired:builder.mutation({
+            query: (data) => ({
+                url: `${TASK_URL}/is-expired`,
+                method: "PUT",
+                body: data,
+                credentials: "include",
+            })
+        }),
+
         postActivity: builder.mutation({
             query: (data) => ({
                 url: `${TASK_URL}/activity`,
@@ -67,4 +93,4 @@ export const TaskApiSlice = apiSlice.injectEndpoints({
     })
 })
 
-export const { usePostActivityMutation, useCreateMutation, useListTaskMutation, useDuplicateTaskMutation, useDeleteTaskMutation, useUpdateTaskMutation, useGetTaskQuery } = TaskApiSlice
+export const { usePostActivityMutation, useCreateMutation, useListTaskMutation, useDuplicateTaskMutation, useDeleteTaskMutation, useUpdateTaskMutation, useGetTaskQuery, useUpdateExpiredMutation, useUpdateStageTaskMutation } = TaskApiSlice

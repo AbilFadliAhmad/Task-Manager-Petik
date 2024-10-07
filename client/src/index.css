@@ -187,3 +187,43 @@
 .animate-leave {
   animation: leave 0.4s forwards;
 }
+
+#checkLabel {
+  transition: 0.5s;
+  display: flex;
+}
+
+#checkLabel::before {
+  position: absolute;
+  content: '';
+  background-color: #fff;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 200px;
+  margin: 1.4px;
+  margin-left: 0.2rem;
+  transition: 0.5s;
+}
+
+#checkLabel::after {
+  content: 'OFF';
+  font-weight: bold;
+  color: black;
+  margin-left: 2.50rem;
+  margin-top: 4px;
+  transition: 0.5s;
+}
+
+#check:checked + #checkLabel {
+  background: #23a0d1;
+}
+
+#check:checked + #checkLabel::before {
+  transform: translateX(2.8rem);
+}
+
+#check:checked + #checkLabel::after {
+  transform: translateX(-2rem);
+  content: 'ON';
+  color: #fff;
+}
