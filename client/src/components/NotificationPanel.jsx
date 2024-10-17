@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 const NotificationPanel = () => {
 
   const ICONS = {
-    alert: <HiBellAlert className="h-5 w-5 text-gray-600 group-hover:text-indigo-600" />,
+    alert: <HiBellAlert className="h-5 w-5 text-gray-600 group- text-indigo-600" />,
     message: <BiSolidMessageRounded className="h-5 w-5 text-gray-600 group-hover:text-indigo-600" />,
   };
 
@@ -36,20 +36,20 @@ const NotificationPanel = () => {
           <div
           className={`${
             t.visible ? 'animate-enter' : 'animate-leave'
-          } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+          } max-w-md w-full  shadow-md rounded-lg ${theme.darkMode ? 'bg-gray-950 border-2 border-green-800' : 'bg-white'} pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
         >
-          <div className="flex-1 w-0 p-4">
+          <div className={`flex-1 w-0 p-4 `}>
             <div className="flex items-start">
               <div className="flex-shrink-0 pt-0.5">
-                <div className="h-10 w-10 rounded-full flex items-center justify-center bg-gray-600/10 shadow-lg">
-                  <MdOutlineMarkEmailUnread className="h-6 w-6 rounded-full text-red-700"  />
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${theme.darkMode ? 'text-green-500 bg-blue-950/50' : 'text-red-700 bg-gray-600/10'} shadow-lg`}>
+                  <MdOutlineMarkEmailUnread className={`h-6 w-6 rounded-full  `}  />
                 </div>
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-900">
+                <p className={`text-sm font-bold ${theme?.darkMode ? 'text-white' : 'text-gray-900'} `}>
                   Pesan Masuk
                 </p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className={`mt-1 text-sm ${theme?.darkMode ? 'text-neutral-300' : 'text-gray-500'} `}>
                   Kamu Punya {data?.notification?.length ?? 0} Pesan yang belum dibaca
                 </p>
               </div>
