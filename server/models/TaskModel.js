@@ -18,8 +18,7 @@ const taskSchema = new mongoose.Schema({
     isTrashed: {type: Boolean, default: false},
     timer: {type: Boolean, default: false},
     isExpired: {type: Boolean, default: false},
-    beginning: {type:Number, default:Date.now()},
-    deadline: {type:Number, default:Date.now() + 78893280 * 60 * 1000},
+    deadline: {type:Date, default:new Date(new Date().setFullYear(new Date().getFullYear() + 150))},
 
 }, {timestamps:true})
 

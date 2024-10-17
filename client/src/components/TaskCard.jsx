@@ -16,40 +16,39 @@ const ICONS = {
 
 const TaskCard = ({ task }) => {
   const intervalRef = useRef(null);
+  const blinkRef = useRef(null);
+  const currentDate = new Date(Date.now()).toLocaleDateString('id-ID').split('/').join('-');
+  const deadlineTime = task?.deadline ? task?.deadline.slice(0, 10) : task?.createdAt.slice(0, 10);
+  const [year, month, date] = deadlineTime.split('-');
+  const deadlineTimeReverse = `${date}-${month}-${year}`;
   const [updateExpiredTask] = useUpdateExpiredMutation();
   const [updateTaskStage] = useUpdateStageTaskMutation();
-  const { user, startCount } = useSelector((state) => state.auth);
-  const [currentDate, setCurrentDate] = useState(Date.now());
+  const { user, startCount, theme } = useSelector((state) => state.auth);
   const [condition, setCondition] = useState(false);
   const [timer, setTimer] = useState(task?.timer ?? false);
-  const [distance,setDistance] = useState(task?.deadline - currentDate)
-  const [timeRemaining, setTimeRemaining] = useState({
-    hours: distance > 0 ? Math.floor(distance / (1000 * 60 * 60)) : 0,
-    minutes: distance > 0 ? Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)) : 0,
-    seconds: distance > 0 ? Math.floor((distance % (1000 * 60)) / 1000) : 0,
-  });
   const [count, setCount] = useState(true);
   const [open, setOpen] = useState(false);
-  const [expired, setExpired] = useState(task?.isExpired);
+  const [expired, setExpired] = useState(task?.isExpired ?? false);
+  const [blinkText, setBlinkText] = useState(false);
 
   useEffect(() => {
     if (!count && !expired) {
       const updateExpired = async () => {
         try {
+          setExpired(true);
           const object = { id: task?._id, isExpired: true };
           await updateExpiredTask(object);
-          setExpired(true);
         } catch (error) {
           console.log(error);
         }
       };
       updateExpired();
-    } else if (count && expired && distance > 0) {
+    } else if (count && expired) {
       const updateExpired = async () => {
         try {
+          setExpired(false);
           const object = { id: task?._id, isExpired: false };
           await updateExpiredTask(object);
-          setExpired(false);
         } catch (error) {
           console.log(error);
         }
@@ -60,84 +59,69 @@ const TaskCard = ({ task }) => {
 
   useEffect(() => {
     if (startCount) {
-      setDistance(task?.deadline - Date.now());
       setCondition(true);
     } else if (!startCount) {
+      clearInterval(blinkRef.current);
       clearInterval(intervalRef.current);
     }
-    return () => clearInterval(intervalRef.current);
+    return () => {
+      clearInterval(intervalRef.current);
+      clearInterval(blinkRef.current);
+    };
   }, [startCount]);
-  
+
   useEffect(() => {
-    if(condition == true) {
-      setTimeRemaining({
-        hours: distance > 0 ? Math.floor(distance / (1000 * 60 * 60)) : 0,
-        minutes: distance > 0 ? Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)) : 0,
-        seconds: distance > 0 ? Math.floor((distance % (1000 * 60)) / 1000) : 0,
-      });
-      startCountdown(distance);
+    if (condition == true) {
+      startCountdown();
+      handleBlinkText();
       setCondition(false);
     }
-  }, [condition]  );
+  }, [condition]);
 
   useEffect(() => {
-    console.log(task?.stage == 'completed' && task?.isExpired == false && task?.timer == false, 'kira kira berhasil atau tidak')
-    if(task?.stage == 'completed' && task?.isExpired == false && task?.timer == true) {
-      const updateTask = async()=>{
+    if (task?.stage == 'completed' && !task?.isExpired && task?.timer) {
+      const updateTask = async () => {
         try {
-          console.log('lah trus ini kapan')
+          await setTimer(false);
           await updateTaskStage({ id: task?._id, batas: '78893280' });
-          setTimer(false);
           clearInterval(intervalRef.current);
         } catch (error) {
-          console.log(error)
-          toast.error(error?.data?.message || error.message)
-        } 
-      }
+          console.log(error);
+          toast.error(error?.data?.message || error.message);
+        }
+      };
       updateTask();
     }
-  }, [task?.stage])
+  }, []);
 
-  const startCountdown = (distance) => {
+  const startCountdown = () => {
+    const [startDeadline, midleDeadline, endDeadline] = deadlineTimeReverse.split('-');
+    const [startDate, middleDate, endDate] = currentDate.split('-');
     intervalRef.current = setInterval(() => {
-      // const hours = Math.floor(distance / (1000 * 60 * 60));
-      // const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      // const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      if (distance < 0) {
-        clearInterval(intervalRef.current);
-        setCount(false);
-        setTimeRemaining({ minutes: 0, seconds: 0, hours: 0 });
-      } else {
-        setTimeRemaining((prevTime) => {
-          if (prevTime.hours === 0 && prevTime.minutes === 0 && prevTime.seconds === 0) {
-            setCount(false);
-            clearInterval(intervalRef.current);
-            return prevTime;
+      if (endDeadline >= endDate) {
+        if (midleDeadline >= middleDate) {
+          if (startDeadline >= startDate) {
+            return;
           }
-
-          let { hours, minutes, seconds } = prevTime;
-
-          if (seconds > 0) {
-            seconds -= 1;
-          } else {
-            seconds = 59;
-            if (minutes > 0) {
-              minutes -= 1;
-            } else {
-              minutes = 59;
-              hours -= 1;
-            }
-          }
-
-          return { hours, minutes, seconds };
-        });
+        }
       }
+      setCount(false);
+      clearInterval(intervalRef.current);
+      return;
     }, 1000);
   };
-  return (
+
+  const handleBlinkText = () => {
+    if (currentDate == deadlineTimeReverse) {
+      blinkRef.current = setInterval(() => {
+        setBlinkText((prev) => !prev);
+      }, 650);
+    }
+  };
+
+  return task ? (
     <>
-      <div className={`w-full h-fit bg-gray-100 shadow-md p-4 rounded relative ${expired ? 'opacity-50' : ''} ${user.isAdmin || !expired ? '' : 'cursor-not-allowed'}`}>
+      <div className={`w-full h-fit ${theme.darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100'} shadow-md p-4 rounded relative ${expired ? 'opacity-50' : ''} ${user.isAdmin || !expired ? '' : 'cursor-not-allowed'}`}>
         {user?.isAdmin || !expired ? null : (
           <div className="w-[5rem] h-[5rem] rounded-full absolute -right-7 -top-5 bg-gray-800 items-center justify-center flex">
             <span className="text-red-300 font-bold">EXPIRED</span>
@@ -152,17 +136,17 @@ const TaskCard = ({ task }) => {
         </div>
         <div className="flex items-center gap-2">
           <div className={`w-4 h-4 rounded-full pr-4 ${TASK_TYPE[task?.stage]}`}></div>
-          <h4 className="line-clamp-1 text-black">{task?.title}</h4>
+          <h4 className={`line-clamp-1  ${expired ? 'line-through' : ''}`}>{task?.title}</h4>
         </div>
-        <span className="text-sm text-gray-600">{formatDate(new Date(task?.date))}</span>
+        <span className={`text-sm ${theme.darkMode ? 'text-neutral-200' : 'text-gray-600'}`}>{formatDate(new Date(task?.date))}</span>
         <div className="w-full border border-gray-300 my-2" />
         <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-3">
-            <div className="flex gap-2 items-center text-sm text-gray-600">
+          <div className={`flex items-center gap-3 ${theme.darkMode ? 'text-neutral-200' : 'text-gray-600'}`}>
+            <div className={`flex gap-2 items-center text-sm ${theme.darkMode ? 'text-neutral-200' : 'text-gray-600'} `}>
               <BiMessageDetail />
               <span>{task?.activities?.length}</span>
             </div>
-            <div className="flex gap-2 items-center text-sm text-gray-600">
+            <div className="flex gap-2 items-center text-sm">
               <MdAttachFile />
               <span>{task?.assets?.length}</span>
             </div>
@@ -209,22 +193,24 @@ const TaskCard = ({ task }) => {
           </div>
         )}
         {timer ? (
-          <div className="w-full pb-2 text-xl">
-            <span>{timeRemaining.hours.toString().padStart(2, '0')}</span>
+          <div className={`w-full pb-2 text-xl ${expired ? 'line-through' : ''}`}>
+            {/* <span>{timeRemaining.hours.toString().padStart(2, '0')}</span>
             <span>:</span>
             <span>{timeRemaining.minutes.toString().padStart(2, '0')}</span>
             <span>:</span>
-            <span>{timeRemaining.seconds.toString().padStart(2, '0')}</span>
+            <span>{timeRemaining.seconds.toString().padStart(2, '0')}</span> */}
+            <span className="font-semibold text-red-800">Deadline: </span>
+            <span className={`font-bold ${blinkText ? 'text-red-700' : ''}`}>{task?.deadline.slice(0, 10)}</span>
           </div>
         ) : (
           <div className="w-full pb-2 text-xl">
-            <p className='invisible'>No Timer</p>
+            <p className="opacity-0">No Timer</p>
           </div>
         )}
       </div>
       <AddSubTask open={open} setOpen={setOpen} id={task._id} />
     </>
-  );
+  ) : null;
 };
 
 export default TaskCard;

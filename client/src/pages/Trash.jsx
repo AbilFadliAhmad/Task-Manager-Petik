@@ -17,7 +17,7 @@ const ICONS = {
 const Trash = () => {
   const [dataList, { isLoading }] = useListTaskMutation();
   const [deleteTask, { isLoading: isLoadingDelete }] = useDeleteTaskMutation();
-  const { search } = useSelector((state) => state.auth);
+  const { search, theme } = useSelector((state) => state.auth);
   const [openDialog, setOpenDialog] = useState(false);
   const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -109,8 +109,8 @@ const Trash = () => {
   }, [search]);
 
   const TableHeader = () => (
-    <thead className="w-full border-b border-gray-300">
-      <tr className="w-full text-black  text-left">
+    <thead className={`w-full border-b ${theme.darkMode ? 'border-white text-white' : 'border-gray-300'}`}>
+      <tr className="w-full  text-left">
         <th className="py-2">Task Title</th>
         <th className="py-2">Priority</th>
         <th className="py-2">Stage</th>
@@ -120,11 +120,11 @@ const Trash = () => {
   );
 
   const TableRow = ({ item }) => (
-    <tr className="border-b border-gray-300 text-gray-600 hover:bg-gray-400/10">
+    <tr className={`border-b ${theme.darkMode ? 'border-white text-white hover:bg-gray-400/10' : 'border-gray-300  text-gray-600 hover:bg-gray-400/10'}`}>
       <td className="py-2">
         <div className="flex items-center gap-2">
           <div className={clsx('w-4 h-4 rounded-full', TASK_TYPE[item.stage])} />
-          <p className="w-full line-clamp-2 text-base text-black">{item?.title}</p>
+          <p className="w-full line-clamp-2 text-base ">{item?.title}</p>
         </div>
       </td>
 
@@ -139,7 +139,7 @@ const Trash = () => {
       <td className="py-2 text-sm">{new Date(item?.date).toDateString()}</td>
 
       <td className="py-2 flex gap-1 justify-end">
-        <Button icon={<MdOutlineRestore className="text-xl text-gray-500" />} onClick={() => restoreClick(item)} />
+        <Button icon={<MdOutlineRestore className="text-xl" />} onClick={() => restoreClick(item)} />
         <Button icon={<MdDelete className="text-xl text-red-600" />} onClick={() => deleteClick(item)} />
       </td>
     </tr>
@@ -151,21 +151,21 @@ const Trash = () => {
     <>
       <div className="w-full md:p-4 p-0 mb-6">
         <div className="flex items-center justify-between mb-8 flex-col md:flex-row">
-          <Title title="Trashed Tasks" />
+          <Title title="Trashed Tasks" className={`${theme.darkMode ? 'text-white' : ''}`} />
 
           <div className="flex gap-2 md:gap-4 items-center mt-4 md:mt-0">
-            {tasks?.length > 1 && (
+            {tasks?.length > 0 && (
               <>
                 <Button
                   label="Restore All"
                   icon={<MdOutlineRestore className="text-lg hidden md:flex" />}
-                  className="flex flex-row-reverse gap-1 items-center text-black text-sm md:text-base rounded-md 2xl:py-2.5"
+                  className={`flex flex-row-reverse gap-1 items-center ${theme.darkMode ? 'text-white' : 'text-black'}  text-black text-sm md:text-base rounded-md 2xl:py-2.5`}
                   onClick={() => restoreAllClick()}
                 />
                 <Button
                   label="Delete All"
                   icon={<MdDelete className="text-lg hidden md:flex" />}
-                  className="flex flex-row-reverse gap-1 items-center text-red-600 text-sm md:text-base rounded-md 2xl:py-2.5"
+                  className="flex flex-row-reverse gap-1 items-center text-red-500 text-sm md:text-base rounded-md 2xl:py-2.5"
                   onClick={() => deleteAllClick()}
                 />
               </>
@@ -184,13 +184,13 @@ const Trash = () => {
               placeholder="Search..."
               className="w-full p-2 pl-10 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
-            <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" onClick={handleSearch}>
+            <svg className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${theme.darkMode ? ' text-black' : 'text-gray-400'} `} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" onClick={handleSearch}>
               <path fillRule="evenodd" d="M12.9 14.32a8 8 0 111.414-1.414l4.387 4.387a1 1 0 01-1.414 1.414l-4.387-4.387zM8 14a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />
             </svg>
           </div>
         </div>
 
-        <div className="bg-gray-100 px-2 md:px-6 py-4 shadow-md rounded">
+        <div className={`${theme.darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100'} px-2 md:px-6 py-4 shadow-md rounded`}>
           <div className="overflow-x-auto">
             <table className="w-full mb-5">
               <TableHeader />

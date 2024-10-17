@@ -50,7 +50,7 @@ const UserAvatar = () => {
                 )}
               </MenuItem>
 
-              <MenuItem>
+              <MenuItem className="text-black">
                 {({ active }) => (
                   <button onClick={() => setOpenPassword(true)} className={`tetx-gray-700 ${active ? 'bg-gray-300' : ''} group flex w-full items-center rounded-md px-2 py-2 text-base`}>
                     <FaUserLock className="mr-2" aria-hidden="true" />

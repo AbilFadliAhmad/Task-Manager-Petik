@@ -18,12 +18,13 @@ const NotificationPanel = () => {
     message: <BiSolidMessageRounded className="h-5 w-5 text-gray-600 group-hover:text-indigo-600" />,
   };
 
-  const {user} = useSelector((state) => state.auth);
+  const {user, theme} = useSelector((state) => state.auth);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const {data, isLoading, refetch} = useGetNotifQuery();
   const [mark, {isLoading:Loading}] = useMarkNotifMutation();
-  const [seen, setSeen] = useState(false)
+  const [seen, setSeen] = useState(false);
+
   
   useEffect(() => {
     if(!isLoading && data?.notification?.length > 0) {
@@ -106,7 +107,7 @@ const NotificationPanel = () => {
     <>
       <Popover className="relative">
         <Popover.Button className="inline-flex items-center outline-none">
-          <div className="w-8 h-8 flex items-center justify-center text-gray-800 relative">
+          <div className={`w-8 h-8 flex items-center justify-center relative`}>
             <IoIosNotificationsOutline className="text-2xl" />
             {data?.notification?.length > 0 && <span className="absolute text-center top-0 right-1 text-sm text-white font-semibold w-4 h-4 rounded-full bg-red-600">{data?.notification?.length}</span>}
           </div>
@@ -124,26 +125,26 @@ const NotificationPanel = () => {
           <Popover.Panel className="absolute -right-16 md:-right-2 z-10 mt-5 flex w-screen max-w-max px-4">
             {({ close }) =>
               data?.notification?.length > 0 && (
-                <div className="w-screen max-w-md flex-auto overflow-auto lg:max-h-[34rem] sm:max-h-[27rem] max-h-[20rem] rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
+                <div className={`w-screen max-w-md flex-auto overflow-auto lg:max-h-[34rem] sm:max-h-[27rem] max-h-[20rem] rounded-3xl ${theme.darkMode ? 'bg-blue-950 text-white' : 'bg-white'}  text-sm leading-6 shadow-lg ring-1 ring-gray-900/5`}>
                   <div className="pl-4 pb-0 pt-2">
                     {data?.notification?.map((item, index) => (
-                      <div key={item._id + index} className="group relative flex gap-x-4 rounded-lg p-4 hover:bg-gray-50">
+                      <div key={item._id + index} className="group relative flex gap-x-4 rounded-lg p-4 ">
                         <div className="mt-1 h-8 w-8 flex items-center justify-center rounded-lg  group-hover:bg-white">{ICONS[item.notiType]}</div>
 
                         <div className="cursor-pointer w-full" onClick={() => viewHandler(item)}>
-                          <div className="flex items-center gap-3 font-semibold text-gray-900 capitalize">
+                          <div className="flex items-center gap-3 font-semibold capitalize">
                             <p> {item.notiType}</p>
-                            <span className="text-xs font-normal lowercase">{moment(item.createdAt).fromNow()}</span>
+                            <span className="text-xs  font-normal lowercase">{moment(item.createdAt).fromNow()}</span>
                           </div>
-                          <p className={`line-clamp-1 mt-1 ${item?.task?.title ? 'text-gray-500' : 'text-red-500'}`}>{item?.task?.title ?? 'Pengumuman...'}</p>
+                          <p className={`line-clamp-1 mt-1  ${item?.task?.title ? '' : 'text-red-500'}`}>{item?.task?.title ?? 'Pengumuman...'}</p>
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  <div className="grid grid-cols-2 divide-x bg-gray-50">
+                  <div className={`grid grid-cols-2 divide-x ${theme.darkMode ? 'bg-blue-950 text-cyan-400' : 'bg-gray-50 text-green-600'} `}>
                     {callsToAction.map((item) => (
-                      <Link key={item.name} onClick={item?.onClick ? () => item.onClick() : () => close()} className="flex items-center justify-center gap-x-2.5 p-3 font-semibold text-green-600 hover:bg-gray-600/10">
+                      <Link key={item.name} onClick={item?.onClick ? () => item.onClick() : () => close()} className="flex items-center justify-center gap-x-2.5 p-3 font-semibold  hover:bg-gray-600/10">
                         {item.name}
                       </Link>
                     ))}

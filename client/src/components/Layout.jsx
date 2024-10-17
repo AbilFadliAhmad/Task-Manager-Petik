@@ -7,7 +7,7 @@ import { setChangeLocation } from '../redux/slices/authSlice';
 import toast from 'react-hot-toast';
 
 const Layout = () => {
-  const { user, location } = useSelector((state) => state.auth);
+  const { user, location, theme } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const path = useLocation().pathname.split('/')[1];
@@ -27,7 +27,7 @@ const Layout = () => {
 
       {<MobileSidebar />}
       {/* <Sidebar /> */}
-      <div className={`flex-1 overflow-y-auto bg-gray-200`}>
+      <div className={`flex-1 overflow-y-auto ${theme.darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
         <Navbar />
         <div className="p-4 2xl:px-10">
           <Outlet />

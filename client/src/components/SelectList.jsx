@@ -3,14 +3,14 @@ import { Listbox, Transition } from '@headlessui/react'
 import { BsChevronExpand } from 'react-icons/bs'
 import { MdCheck } from 'react-icons/md'
 
-const SelectList = ({lists, selected, setSelected, label}) => {
+const SelectList = ({lists, selected, setSelected, label, theme}) => {
   return (
     <div className='w-full'>
-      {label && <p className='text-slate-900 dark:text-gray-500'>{label}</p>}
+      {label && <p className={`${theme?.darkMode ? 'text-white' : 'text-slate-900'}`}>{label}</p>}
 
       <Listbox value={selected} onChange={setSelected}>
         <div className='relative mt-1'>
-          <Listbox.Button className='relative w-full cursor-default rounded bg-white pl-3 pr-10 text-left px-3 py-2.5 2xl:py-3 border border-gray-300 sm:text-sm'>
+          <Listbox.Button className={`relative w-full cursor-default rounded ${theme?.darkMode ? 'bg-transparent text-white' : 'bg-white'} pl-3 pr-10 text-left px-3 py-2.5 2xl:py-3 h-[3.2rem] border border-gray-300 sm:text-sm`}>
             <span className='block truncate'>{selected}</span>
             <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
               <BsChevronExpand

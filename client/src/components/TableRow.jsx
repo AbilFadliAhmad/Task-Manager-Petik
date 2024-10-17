@@ -1,11 +1,14 @@
 import { MdAttachFile, MdKeyboardArrowDown, MdKeyboardArrowUp, MdKeyboardDoubleArrowUp } from 'react-icons/md';
-import { BGS, formatDate, PRIOTITYSTYELS, TASK_TYPE } from '../utils';
+import { BGS, formatDate, loadingDatab, PRIOTITYSTYELS, TASK_TYPE } from '../utils';
 import { BiMessageDetail } from 'react-icons/bi';
 import { FaList } from 'react-icons/fa';
 import UserInfo from './UserInfo';
 import Button from './Button';
 import { AddTask, ConfirmationDialog } from '.';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDeleteTaskMutation, useListTaskMutation, useUpdateExpiredMutation, useUpdateStageTaskMutation } from '../redux/slices/TaskApiSlice';
+import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
 
 const ICONS = {
   high: <MdKeyboardDoubleArrowUp />,
@@ -17,26 +20,132 @@ const TableRow = ({ task }) => {
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
   const [selected, setSelected] = React.useState([]);
+  const [deleteTask] = useDeleteTaskMutation();
+  const [refetch] = useListTaskMutation();
+  const intervalRef = useRef(null);
+  const currentDate = new Date(Date.now()).toLocaleDateString('id-ID').split('/').join('-');
+  const deadlineTime = task?.deadline ? task?.deadline.slice(0, 10) : task?.createdAt.slice(0, 10);
+  const [year, month, date] = deadlineTime.split('-');
+  const deadlineTimeReverse = `${date}-${month}-${year}`;
+  const [updateExpiredTask] = useUpdateExpiredMutation();
+  const [updateTaskStage] = useUpdateStageTaskMutation();
+  const { user, startCount } = useSelector((state) => state.auth);
+  const [condition, setCondition] = useState(false);
+  const [timer, setTimer] = useState(task?.timer ?? false);
+  const [count, setCount] = useState(true);
+  const [expired, setExpired] = useState(task?.isExpired ?? false);
 
   const deleteClicks = (id) => {
     setSelected(id);
     setOpenDialog(true);
   };
 
-  const editClicks = (task) => {
-    setSelected(task);
-    setOpenEdit(true);
+  const deleteHandler = async () => {
+    try {
+      const object = {
+        id: task._id,
+        action: 'deleteTemporary',
+      };
+      const result = await deleteTask(object);
+      if (result.data.success) {
+        loadingDatab(refetch(object), `Berhasil Menghapus Tugas berjudul ${task?.title}`, `Gagal Menghapus Tugas berjudul ${task?.title}`)
+          .then(() => setOpenDialog(false))
+          .then(() => setTimeout(() => window.location.reload(), 1100));
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error('Ada sesuatu yang salah saat menghapus task');
+    }
   };
 
-  const deleteHandler = () => {};
+  useEffect(() => {
+    if (!count && !expired) {
+      const updateExpired = async () => {
+        try {
+          setExpired(true);
+          const object = { id: task?._id, isExpired: true };
+          await updateExpiredTask(object);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      updateExpired();
+    } else if (count && expired) {
+      const updateExpired = async () => {
+        try {
+          setExpired(false);
+          const object = { id: task?._id, isExpired: false };
+          await updateExpiredTask(object);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      updateExpired();
+    }
+  }, [count]);
+
+  useEffect(() => {
+    if (startCount) {
+      setCondition(true);
+    } else if (!startCount) {
+      clearInterval(intervalRef.current);
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [startCount]);
+
+  useEffect(() => {
+    if (condition == true) {
+      startCountdown();
+      setCondition(false);
+    }
+  }, [condition]);
+
+  useEffect(() => {
+    if (task?.stage == 'completed' && !task?.isExpired && task?.timer) {
+      const updateTask = async () => {
+        try {
+          await setTimer(false);
+          await updateTaskStage({ id: task?._id, batas: '78893280' });
+          clearInterval(intervalRef.current);
+        } catch (error) {
+          console.log(error);
+          toast.error(error?.data?.message || error.message);
+        }
+      };
+      updateTask();
+    }
+  }, []);
+
+  const startCountdown = () => {
+    const [startDeadline, midleDeadline, endDeadline] = deadlineTimeReverse.split('-');
+    const [startDate, middleDate, endDate] = currentDate.split('-');
+    intervalRef.current = setInterval(() => {
+      if (endDeadline >= endDate) {
+        if (midleDeadline >= middleDate) {
+          if (startDeadline >= startDate) {
+            return;
+          }
+        }
+      }
+      setCount(false);
+      clearInterval(intervalRef.current);
+      return;
+    }, 1000);
+  };
 
   return (
     <>
-      <tr className="border-b border-gray-200 text-gray-600 hover:bg-gray-300/10">
+      <tr className={`border-b border-gray-200 text-gray-600  ${expired ? 'line-through bg-red-300/50' : 'hover:bg-gray-300/10'}`}>
         <td className="py-2 pr-8 sm:pr-0">
           <div className="flex items-center gap-2 lg:pr-0 pr-0 md:pr-4">
             <div className={`w-4 h-4 rounded-full pr-4 ${TASK_TYPE[task?.stage]}`}></div>
             <p className="w-full line-clamp-2 text-base text-black">{task?.title}</p>
+          </div>
+        </td>
+
+        <td className="py-2">
+          <div className="flex items-center w-[7.5rem]">
+            <span className="text-sm text-gray-600 ">{timer ? task?.deadline.slice(0, 10) : 'No Deadline'}</span>
           </div>
         </td>
 
@@ -90,8 +199,16 @@ const TableRow = ({ task }) => {
         </td>
 
         <td className="py-2 flex gap-2 md:gap-4 justify-end pr-6">
-          <Button label="Edit" onClick={() => setOpenEdit(true)} type={'button'} className={'text-blue-600 hover:text-blue-500 sm:px-0 text-sm md:text-base'} />
-          <Button label="Delete" type={'button'} className={'text-red-700 hover:text-red-500 sm:px-0 text-sm md:text-base'} onClick={() => deleteClicks(task._id)} />
+          {user?.isAdmin || user?.isUstadz ? (
+            <Button label="Edit" onClick={() => setOpenEdit(true)} type={'button'} className={'text-blue-600 hover:text-blue-500 sm:px-0 text-sm md:text-base'} />
+          ) : (
+            <Button label="Null" onClick={() => {}} type={'button'} className={'text-blue-600 hover:text-blue-500 sm:px-0 text-sm md:text-base opacity-0'} />
+          )}
+          {user?.isAdmin ? (
+            <Button label="Delete" type={'button'} className={'text-red-700 hover:text-red-500 sm:px-0 text-sm md:text-base'} onClick={() => deleteClicks(task._id)} />
+          ) : (
+            <Button label="Null" type={'button'} className={'text-red-700 hover:text-red-500 sm:px-0 text-sm md:text-base opacity-0'} onClick={() => {}} />
+          )}
         </td>
       </tr>
       <AddTask open={openEdit} setOpen={setOpenEdit} task={task} />

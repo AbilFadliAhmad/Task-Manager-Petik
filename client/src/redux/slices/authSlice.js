@@ -5,7 +5,8 @@ const initialState = {
   isSidebarOpen: true,
   location: false,
   search:localStorage.getItem('search') || '',
-  startCount: true
+  startCount: true, 
+  theme: localStorage.getItem('theme') ? JSON.parse(localStorage.getItem('theme')) : null
 };
 
 const authSlice = createSlice ({
@@ -31,9 +32,12 @@ const authSlice = createSlice ({
         }, 
         setStartCount: (state, action)=>{
             state.startCount = action.payload
+        },
+        setChangeTheme: (state, action)=>{
+            state.theme = action.payload
         }
     }
 })
 
-export const { setCredentials, logout, setOpenSidebar, setChangeLocation, setSeacrhList, setStartCount } = authSlice.actions;
+export const { setCredentials, logout, setOpenSidebar, setChangeLocation, setSeacrhList, setStartCount, setChangeTheme } = authSlice.actions;
 export default authSlice.reducer

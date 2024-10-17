@@ -16,7 +16,8 @@ const createTask = async (req, res) => {
   try {
     const { userId, leader:ustadz } = req.user;
     const { title, team=[], stage, date, priority, leader=[], deadline=[], timer = false } = req.body;
-    const deadlineTime = Date.now() + deadline * 60 * 1000
+
+    if(timer == true && deadline.length == 0) return res.status(401).json({success: false, message: 'Jika mengaktifkan timer, Harap tetapkan tanggal Deadline'})
     const image = req.file || req.body.image;
     const tanggal = new Date(String(date))
     const user = await userModel.findById(userId);
@@ -35,6 +36,7 @@ const createTask = async (req, res) => {
       by: userId,
     };
 
+
     const task = await taskModel.create({
       title,
       stage: stage.toLowerCase(),
@@ -43,7 +45,7 @@ const createTask = async (req, res) => {
       activities: activity,
       assets: gambarCloudinary?.secure_url ?? [],
       public_id: gambarCloudinary?.public_id ?? '',
-      ...(deadline.length > 0 && timer ? { deadline: deadlineTime } : {}),
+      ...(deadline.length > 0 && timer ? { deadline } : {}),
       timer,
     });
 
@@ -250,6 +252,7 @@ const dashboardStatistics = async (req, res) => {
 
     // Calculate total Expired tasks
     const expiredTasks = allTasks.filter(task => task.isExpired);
+    const timerTasks = allTasks.filter(task => task.timer);
 
     // Group tasks by priority
     const groupData = Object.entries(
@@ -284,6 +287,7 @@ const dashboardStatistics = async (req, res) => {
       tasks: groupTaskks,
       graphData: groupData,
       expiredTasks: expiredTasks,
+      timerTasks: timerTasks,
       users: isAdmin ? await userModel.find() : isUstadz ? HasilUstadz : hasilMurid
     };
 
@@ -334,8 +338,6 @@ const updateTask = async (req, res) => {
     const notifArray = await notificationModel.find({task:id})
     const notif = notifArray[0]
     const image = req.file || req.body.image;
-    const deadlineTime = deadline.length > 0 ? Date.now() + deadline * 60 * 1000 : undefined
-    const defaultDeadline = Date.now() + 78893280 * 60 * 1000
     
     const task = await taskModel.findById(id);
     const dataPrevTask = JSON.parse(JSON.stringify(task))
@@ -354,7 +356,7 @@ const updateTask = async (req, res) => {
       
       task.title = title;
       task.timer = timer == null ? task.timer : timer;
-      task.deadline = deadline.length > 0 && timer ? deadlineTime : timer == null ? task.deadline : defaultDeadline;
+      task.deadline = deadline.length > 0 && timer ? deadline : task.deadline;
     task.date = date;
     task.priority = priority.toLowerCase();
     // task.assets = assets;

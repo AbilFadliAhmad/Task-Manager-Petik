@@ -16,7 +16,7 @@ const TABS = [
 ];
 
 const Tasks = () => {
-  const { user, search } = useSelector((state) => state.auth);
+  const { user, search, theme } = useSelector((state) => state.auth);
   const object = { isTrashed: false, search };
   const params = useParams();
   const [selected, setSelected] = useState(parseInt(localStorage.getItem('selected')) || 0);
@@ -42,13 +42,8 @@ const Tasks = () => {
     }
   }, [ukuran]);
 
-  // useEffect(()=>{
-  //   setHalaman( parseInt( parseInt(query.get('halaman')) || localStorage.getItem('halaman')) || 1)
-  // },[path])
-
   useEffect(() => {
     if (dummyCondition?.length > 1) {
-      // setTasks(tasks?.filter(task=>path == 'tasks' || task.stage == path))
       setJumlahHalaman(Math.ceil(tasks?.length / itemPerPage));
       setDummyCondition('');
     }
@@ -56,16 +51,6 @@ const Tasks = () => {
 
   useEffect(() => {
     setHalaman(parseInt(parseInt(query.get('halaman')) || localStorage.getItem('halaman')) || 1);
-    // const refetchitem = async () => {
-    //   try {
-    //     const result = await dataList(object).unwrap();
-    //     await setTasks(result.data);
-    //     await setUkuran(result?.data?.length);
-    //   } catch (error) {
-    //     console.log(error);
-    //     toast.error('gagal memuat data tasks, coba logout dan login ulang');
-    //   }
-    // };
     refetchitem();
   }, [path]);
 
@@ -85,7 +70,7 @@ const Tasks = () => {
   ) : (
     <div className="w-full p-5">
       <div className="flex items-center justify-start mb-4">
-        <Title title={status ? `${status} Tasks` : 'Tasks'} />
+        <Title title={status ? `${status} Tasks` : 'Tasks'} className={`${theme.darkMode ? 'text-white' : ''}`} />
         <div className="ml-auto flex sm:flex-row flex-col sm:gap-7 gap-2">
           <Button onClick={refetchitem} icon={<FiRefreshCcw className="text-lg" />} label={'Refresh Task'} className={`${user.isAdmin ? 'flex' : 'flex'} text-white flex-row-reverse gap-3 items-center bg-blue-700 py-2 2xl:py-2.5`} />
           {!status && (
@@ -96,7 +81,7 @@ const Tasks = () => {
 
       <Tabs tabs={TABS} setSelected={setSelected}>
         {!status && (
-          <div className="w-full flex flex-col md:flex-row justify-between gap-4 md:gap-x-12 py-4">
+          <div className={`w-full flex flex-col md:flex-row justify-between gap-4 md:gap-x-12 py-4`}>
             <TaskTitle className={TASK_TYPE.todo} label={'To Do'} />
             <TaskTitle className={TASK_TYPE['in progress']} label={'In Progress'} />
             <TaskTitle className={TASK_TYPE.completed} label={'Complete'} />

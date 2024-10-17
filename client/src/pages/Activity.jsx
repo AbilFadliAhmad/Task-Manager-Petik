@@ -10,6 +10,7 @@ import { RiDeleteBack2Fill, RiLoginCircleFill, RiLoginCircleLine } from 'react-i
 import { FiLogOut } from 'react-icons/fi';
 import { IoCreateOutline } from 'react-icons/io5';
 import { HiOutlineDocumentDuplicate } from 'react-icons/hi';
+import { useSelector } from 'react-redux';
 
 const Activity = () => {
   // const isLoading = false
@@ -23,6 +24,7 @@ const Activity = () => {
   const object = { search: localStorage.getItem('searchLogs') };
   const [text, setText] = useState('');
   const [action, setAction] = useState('');
+  const {theme} = useSelector((state)=>state.auth)
 
   const openLog = (log) => {
     setText(log);
@@ -97,8 +99,8 @@ const Activity = () => {
   }, []);
 
   const TableHeader = () => (
-    <thead className="w-full border-b border-gray-300 text-sm sm:text-lg">
-      <tr className="w-full text-black  text-left">
+    <thead className={`w-full border-b ${theme.darkMode ? 'border-white text-white' : 'border-gray-300'} text-sm sm:text-lg`}>
+      <tr className="w-full   text-left">
         <th className="py-2 px-4">Type</th>
         <th className="py-2 px-3 pl-6 sm:px-0 sm:pl-4">By</th>
         <th className="py-2 px-3 sm:px-4 line-clamp-1">Isi</th>
@@ -109,11 +111,11 @@ const Activity = () => {
   );
 
   const TableRow = ({ log }) => (
-    <tr className="border-b border-gray-300 text-gray-600 hover:bg-gray-400/10" onClick={() => openLog(log)}>
+    <tr className={`border-b ${theme.darkMode ? 'border-white text-white  hover:bg-gray-400/10' : 'border-gray-300 text-gray-600  hover:bg-gray-400/10'}`} onClick={() => openLog(log)}>
       <td className="p-4">
         <div className="flex items-center gap-2">
           <div className="w-5 text-lg h-full rounded-full">{ICONS[log?.type]}</div>
-          <p className="w-full line-clamp-2 uppercase  text-base text-black">{log?.type}</p>
+          <p className={`${theme.darkMode ? 'text-white' : 'text-black'} w-full line-clamp-2 uppercase  text-base`}>{log?.type}</p>
         </div>
       </td>
 
@@ -175,13 +177,13 @@ const Activity = () => {
               placeholder="Cari Berdasarkan Kolom Isi..."
               className="w-full p-2 pl-10 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
-            <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" onClick={handleSearch}>
+            <svg className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${theme.darkMode ? 'text-black' : 'text-gray-400'}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" onClick={handleSearch}>
               <path fillRule="evenodd" d="M12.9 14.32a8 8 0 111.414-1.414l4.387 4.387a1 1 0 01-1.414 1.414l-4.387-4.387zM8 14a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />
             </svg>
           </div>
         </div>
 
-        <div className="bg-gray-100 px-2 md:px-7 pt-4 pb-9 shadow-md rounded">
+        <div className={` ${theme.darkMode ? 'bg-gray-900' : 'bg-gray-100'} px-2 md:px-7 pt-4 pb-9 shadow-md rounded`}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <TableHeader />
@@ -195,9 +197,9 @@ const Activity = () => {
         </div>
       </div>
 
-      <DetailsLog open={open} setOpen={setOpen} text={text} />
+      <DetailsLog theme={theme} open={open} setOpen={setOpen} text={text} />
 
-      <ConfirmationDialog open={openDelete} setOpen={setOpenDelete} msg={msg} setMsg={setMsg} onClick={deleteHandler} />
+      <ConfirmationDialog open={openDelete} setOpen={setOpenDelete} msg={msg} setMsg={setMsg} onClick={deleteHandler} theme={theme.darkMode} />
     </>
   );
 };

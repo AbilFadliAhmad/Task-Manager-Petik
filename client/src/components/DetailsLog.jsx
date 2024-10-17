@@ -6,7 +6,7 @@ import { IoCreateOutline } from 'react-icons/io5';
 import { GrDocumentUpdate } from 'react-icons/gr';
 import { HiOutlineDocumentDuplicate } from 'react-icons/hi';
 
-const DetailsLog = ({open, setOpen,text}) => {
+const DetailsLog = ({open, setOpen,text, theme}) => {
     const ICONS = {
         login: <RiLoginCircleLine className='text-blue-600' />,
         delete: <RiDeleteBack2Fill  className='text-red-900' />,
@@ -18,8 +18,8 @@ const DetailsLog = ({open, setOpen,text}) => {
 
   return (
     <ModalWrapper open={open} setOpen={setOpen}>
-      <div className='flex flex-col relative'>
-        <div className='flex items-center gap-1'>
+      <div className={`flex flex-col relative ${theme?.darkMode ? 'text-white' : '' }`}>
+        <div className='flex items-center gap-1 '>
             <span className={`text-xl mb-9 line-clamp-1 uppercase`}>{ICONS[text?.type]}</span>
             <span className={`text-lg mb-8 line-clamp-1 uppercase`}>{text?.type}</span>
         </div>

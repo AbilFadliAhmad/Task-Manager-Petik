@@ -12,6 +12,7 @@ import { getInitials, loadingDatab } from '../utils'
 import { UserAction } from '../components/ConfirmationDialog'
 import { useDeleteMutation, useListQuery, useStatusMutation } from '../redux/slices/ActionApiSlice'
 import { toast } from 'react-hot-toast'
+import { useSelector } from 'react-redux'
 
 const Users = () => {
   
@@ -22,6 +23,7 @@ const Users = () => {
   const { data, isLoading, refetch } = useListQuery()
   const [statusAccount, {isLoading: isLoadingStatus}] = useStatusMutation()
   const [deleteAccount, {isLoading: isLoadingDelete}] = useDeleteMutation()
+  const {theme} = useSelector(state => state.auth)
 
   const userActionHandler = async()=>{
     try {
@@ -68,8 +70,8 @@ const Users = () => {
   }
 
   const TableHeader = ()=>(
-    <thead className='w-full border-b border-gray-300 text-sm sm:text-lg'>
-      <tr className='w-full text-black  text-left'>
+    <thead className={`${theme.darkMode ? 'border-white text-white' : 'border-gray-300'} w-full border-b  text-sm sm:text-lg`}>
+      <tr className='w-full text-left'>
         <th className='py-2'>Full Name</th>
         <th className='py-2 px-3 pl-6 sm:px-0 sm:pl-0'>Title</th>
         <th className='py-2 px-3 sm:px-0 line-clamp-1'>Email</th>
@@ -79,7 +81,7 @@ const Users = () => {
     </thead>
     )
     const TableRow = ({user})=>(
-      <tr className={`border-b border-gray-300 text-gray-600 hover:bg-gray-400/100 ${user.isAdmin ? 'bg-yellow-200' : user.isUstadz ? 'bg-blue-500/20' : ''}  text-sm sm:text-lg`}>
+      <tr className={`${theme.darkMode ? 'border-white text-white hover:bg-gray-400/20' : 'border-gray-300 text-gray-600 hover:bg-gray-400/100'} border-b  ${user.isAdmin ? `${theme.darkMode ? 'bg-yellow-600' : 'bg-yellow-200'}` : user.isUstadz ? 'bg-blue-500/20' : ''}  text-sm sm:text-lg`}>
         <td className='p-2'>
           <div className='flex items-center gap-3'>
             <div className={`w-11 h-11 rounded-full flex items-center justify-center ${user.image ? 'border-2 border-gray-300  sm:text-sm' : 'text-sm bg-blue-700 text-white'}`}>
@@ -109,14 +111,14 @@ const Users = () => {
           <Button 
           label='Edit' 
           type={'button'} 
-          className={'text-blue-600 hover:text-blue-500 sm:px-0 text-sm md:text-base'}
+          className={`${theme.darkMode ? 'text-blue-100 hover:text-blue-500 font-bold' : 'text-blue-600 hover:text-blue-500'} sm:px-0 text-sm md:text-base`}
           onClick={() => editClick(user)}
           />
 
           <Button 
           label='Delete' 
           type={'button'} 
-          className={'text-red-700 hover:text-red-500 sm:px-0 text-sm md:text-base '} 
+          className={`${theme.darkMode ? 'text-red-200 hover:text-red-500 font-bold' : 'text-red-700 hover:text-red-500'}  sm:px-0 text-sm md:text-base `} 
           onClick={() => deleteClicks(user)} 
           status={user}
           />
@@ -128,11 +130,11 @@ const Users = () => {
     <>
       <div className='w-full md:p-4 px-0 mb-6'>
           <div className='flex items-center justify-between mb-8'>
-            <Title title='Team Members' className={'text-lg md:text-2xl'} />
+            <Title title='Team Members' className={`${theme.darkMode ? 'text-white' : ''} text-lg md:text-2xl`} />
             <Button onClick={() => {setOpen(true); setSelected(null)}} className={'flex flex-row-reverse gap-1 items-center bg-blue-500 text-white text-sm sm:text-lg w-[9rem] sm:w-[10.32rem]'} icon={<IoMdAdd className='text-lg' />} label={'Add New User'} />
           </div>
 
-          <div className='bg-gray-100 px-2 md:px-4 pt-4 pb-9 shadow-md rounded'>
+          <div className={` ${theme.darkMode ? 'bg-gray-900' : 'bg-gray-100'} px-2 md:px-4 pt-4 pb-9 shadow-md rounded`}>
           {isLoading ? (
             <Loading />
           ) : (

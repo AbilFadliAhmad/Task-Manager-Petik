@@ -10,7 +10,7 @@ import Loading from './Loading';
 import { FaRegCircleUser } from 'react-icons/fa6';
 import { useSelector } from 'react-redux';
 
-const UserList = ({ team, setTeam, leader }) => {
+const UserList = ({ team, setTeam, leader, theme }) => {
   const {user:pengguna} = useSelector(state=>state.auth)
   const { data, isLoading } = useDropdownQuery();
   const [users, setUsers] = useState([]);
@@ -22,21 +22,8 @@ const UserList = ({ team, setTeam, leader }) => {
     const leader3 = leader[2]?._id ?? undefined
     if(leader3 == pengguna._id || leader2 == pengguna._id || leader1 == pengguna._id) {
       setUsers(data?.users?.filter(user=> user.leader == leader3 || user.leader == leader2 || user.leader == leader1 && user.isUstadz == false) );
-    } else {
-      // setUsers(data?.users?.filter(user=>user.leader == pengguna._id));
-    }
+    } 
   }, [data,isLoading])
-  // const [selectedUsers, setSelectedUsers] = useState([
-    //   { id: 1, name: 'Durward Reynolds' },
-    //   { id: 2, name: 'Kenton Towne' },
-    //   { id: 3, name: 'Therese Wunsch' },
-    //   { id: 4, name: 'Benedict Kessler' },
-    //   { id: 5, name: 'Katelyn Rohan' },
-    //   { id: 6, name: ' Rohan' },
-    //   { id: 7, name: 'dnkf Rohan' },
-    //   { id: 8, name: 'Katefni Rohan' },
-    //   { id: 9, name: 'reyhan' },
-    // ]);
   const onCheck = (e)=>{
     if(selectedAdmin.length > 0) {
       const confirm = window.confirm("Apakah kamu yakin ingin mengganti anggota tugas ini?")
@@ -61,7 +48,7 @@ const UserList = ({ team, setTeam, leader }) => {
     <div className="">
       <Listbox value={selectedAdmin} onChange={handleChange} className="relative" multiple>
         <div className=''>
-        <p className={`absolute left-2 top-4 text-gray-500 ${selectedAdmin.length > 0 ? 'hidden' : ''}`}>Member...</p>
+        <p className={`absolute left-2 top-4 ${theme?.darkMode ? 'text-white' : 'text-gray-500'}  ${selectedAdmin.length > 0 ? 'hidden' : ''}`}>Member...</p>
           <ListboxButton disabled={pengguna.isAdmin ? true : false} className={'w-full cursor-pointer pl-3 pr-10 text-left px-3 py-2.5 2xl:py-3 sm:text-sm overflow-auto disabled:cursor-not-allowed'} onClick={onCheck}>
             <p className='text-sm'>
               {selectedAdmin.length > 0 ? selectedAdmin.map(item=>item.name).join(', ') : <FaRegCircleUser className='w-full h-full pr-[20rem] pb-4 invisible' />}

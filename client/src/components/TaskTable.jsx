@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import React from 'react'
 import {
   MdKeyboardArrowDown,
   MdKeyboardArrowUp,
@@ -8,6 +7,7 @@ import {
 import { BGS, PRIOTITYSTYELS, TASK_TYPE } from '../utils'
 import { UserInfo } from '.'
 import moment from 'moment'
+import { useSelector } from 'react-redux'
 
 const TaskTable = ({tasks}) => {
   const ICONS = {
@@ -16,18 +16,20 @@ const TaskTable = ({tasks}) => {
     normal:<MdKeyboardArrowDown />,
   }
 
+  const {theme} = useSelector(state => state.auth)
+
   const TableRow = ({task})=>(
-    <tr className='border-b border-gray-500 text-gray-200 hover:bg-gray-300/100 '>
+    <tr className={`${theme.darkMode ? 'border-b border-white text-neutral-200 hover:bg-gray-300/20' : 'border-b border-gray-500 text-black hover:bg-gray-300/100'}`}>
       <td className='py-2 px-3'>
         <div className='flex items-center gap-2'>
           <div className={clsx('w-4 h-4 rounded-full pr-4', TASK_TYPE[task.stage])} />
-          <p className='text-black text-base'>{task.title}</p>
+          <p className='text-base'>{task.title}</p>
         </div>
       </td>
       <td className='py-2'>
         <div className='flex gap-1 items-center'>
           <span className={`text-lg ${PRIOTITYSTYELS[task.priority]}`}>{ICONS[task.priority]}</span>
-          <span className='text-black text-base capitalize'>{task.priority}</span>
+          <span className='text-base capitalize'>{task.priority}</span>
         </div>
       </td>
       <td className='py-2'>
@@ -45,14 +47,14 @@ const TaskTable = ({tasks}) => {
         </div>
       </td>
       <td className='py-2 hidden md:block'>
-          <span className='text-base ml-3 text-gray-600'>{moment(task?.date).fromNow()}</span>
+          <span className={`text-base ml-3 ${theme.darkMode ? 'text-gray-400/100' : 'text-gray-600'}`}>{moment(task?.date).fromNow()}</span>
       </td>
     </tr>
   )
 
   const TableHeadler = ()=>(
-    <thead className='border-b border-gray-500'>
-      <tr className='text-black text-left'>
+    <thead className={`${theme.darkMode ? 'border-b border-white text-white' : 'border-b text-black border-gray-500'}`}>
+      <tr className='text-left'>
         <th className='py-2 px-2'>Task Title</th>
         <th className='py-2'>Priority</th>
         <th className='py-2'>Team</th>
@@ -63,7 +65,7 @@ const TaskTable = ({tasks}) => {
 
   return (
     <>
-     <div className='w-full lg:w-2/3 bg-gray-100 px-2 md:px-4 pt-2 pb-4 shadow-md rounded'>
+     <div className={`w-full lg:w-2/3 ${theme.darkMode ? 'bg-gray-900' : 'bg-gray-100'}  px-2 md:px-4 pt-2 pb-4 shadow-md rounded`}>
       <table className='w-full overflow-auto'>
         <TableHeadler />
         <tbody>
