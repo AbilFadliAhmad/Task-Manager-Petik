@@ -80,6 +80,12 @@ const AddTask = ({ task: task1, open, setOpen }) => {
     } else {
       try {
         setButtonLoading(true);
+        if (task?.isExpired && !user.isAdmin) {
+          toast.error('Task Expired, Tidak Bisa Diubah');
+          setButtonLoading(false);
+          setOpen(false);
+          return;
+        }
         toastD = toast.loading('Tunggu Sebentar...');
         const form = new FormData();
         form.append('title', data.title);

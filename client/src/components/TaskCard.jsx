@@ -121,7 +121,7 @@ const TaskCard = ({ task }) => {
 
   return task ? (
     <>
-      <div className={`w-full h-fit ${theme.darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100'} shadow-md p-4 rounded relative ${expired ? 'opacity-50' : ''} ${user.isAdmin || !expired ? '' : 'cursor-not-allowed'}`}>
+      <div className={`w-full seamlessly h-fit ${theme.darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100'} shadow-md p-4 rounded relative ${expired ? 'opacity-50' : ''} ${user.isAdmin || !expired ? '' : 'cursor-not-allowed'}`}>
         {user?.isAdmin || !expired ? null : (
           <div className="w-[5rem] h-[5rem] rounded-full absolute -right-7 -top-5 bg-gray-800 items-center justify-center flex">
             <span className="text-red-300 font-bold">EXPIRED</span>
@@ -194,18 +194,14 @@ const TaskCard = ({ task }) => {
         )}
         {timer ? (
           <div className={`w-full pb-2 text-xl ${expired ? 'line-through' : ''}`}>
-            {/* <span>{timeRemaining.hours.toString().padStart(2, '0')}</span>
-            <span>:</span>
-            <span>{timeRemaining.minutes.toString().padStart(2, '0')}</span>
-            <span>:</span>
-            <span>{timeRemaining.seconds.toString().padStart(2, '0')}</span> */}
             <span className="font-semibold text-red-800">Deadline: </span>
-            <span className={`font-bold ${blinkText ? 'text-red-700' : ''}`}>{task?.deadline.slice(0, 10)}</span>
+            <span className={`font-bold whitespace-pre ${blinkText ? 'text-red-700' : ''}`}>{task?.deadline.slice(0, 10)}</span>
           </div>
         ) : (
-          <div className="w-full pb-2 text-xl">
-            <p className="opacity-0">No Timer</p>
-          </div>
+          <div className={`w-full opacity-0 pb-2 text-xl ${expired ? 'line-through' : ''}`}>
+          <span className="font-semibold text-red-800">Deadline: </span>
+          <span className={`font-bold ${blinkText ? 'text-red-700' : ''}`}>{task?.deadline.slice(0, 10)}</span>
+        </div>
         )}
       </div>
       <AddSubTask open={open} setOpen={setOpen} id={task._id} />

@@ -68,7 +68,7 @@ const Tasks = () => {
   return isLoading ? (
     <Loading2 />
   ) : (
-    <div className="w-full p-5">
+    <div className="w-full p-5 seamlessly">
       <div className="flex items-center justify-start mb-4">
         <Title title={status ? `${status} Tasks` : 'Tasks'} className={`${theme.darkMode ? 'text-white' : ''}`} />
         <div className="ml-auto flex sm:flex-row flex-col sm:gap-7 gap-2">

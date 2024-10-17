@@ -83,7 +83,7 @@ const Dashboard = () => {
         }
       </div>
 
-      <div className={`w-full ${theme.darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100'} my-16 p-4 rounded shadow:lg`}>
+      <div className={`w-full seamlessly ${theme.darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100'} my-16 p-4 rounded shadow:lg`}>
         <h4>Chart berdasarkan Prioritas</h4>
         <Chart graphData={summary?.graphData} />
       </div>

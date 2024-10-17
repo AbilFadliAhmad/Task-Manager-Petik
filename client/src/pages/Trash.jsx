@@ -190,7 +190,7 @@ const Trash = () => {
           </div>
         </div>
 
-        <div className={`${theme.darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100'} px-2 md:px-6 py-4 shadow-md rounded`}>
+        <div className={`seamlessly ${theme.darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100'} px-2 md:px-6 py-4 shadow-md rounded`}>
           <div className="overflow-x-auto">
             <table className="w-full mb-5">
               <TableHeader />

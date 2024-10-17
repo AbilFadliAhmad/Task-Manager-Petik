@@ -30,7 +30,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className={`flex justify-between items-center ${theme.darkMode ? 'bg-gray-800 border-b border-white text-white' : 'bg-gray-200'}  px-7 py-3 2xl:py-4 sticky z-10 top-0 shadow-md`}>
+    <div className={`flex seamlessly justify-between items-center ${theme.darkMode ? 'bg-gray-800 border-b border-white text-white' : 'bg-gray-200'}  px-7 py-3 2xl:py-4 sticky z-10 top-0 shadow-md`}>
       <div className="flex gap-4">
         <button onClick={() => dispatch(setOpenSidebar(true))} className="text-2xl text-gray-500 block md:hidden">
           ☰

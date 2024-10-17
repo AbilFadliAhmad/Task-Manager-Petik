@@ -97,7 +97,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className={`w-full h-screen flex flex-col gap-5 p-5 ${theme.darkMode ? 'bg-gray-900 border-r border-white' : 'bg-gray-300'}`}>
+    <div className={`w-full h-screen flex flex-col seamlessly gap-5 p-5 ${theme.darkMode ? 'bg-gray-900 border-r border-white' : 'bg-gray-300'}`}>
       <div className="flex gap-1 items-center">
         <p className="bg-blue-600 p-2 rounded-full">
           <MdOutlineAddTask className="text-white text-2xl font-black" />

@@ -1,15 +1,17 @@
 import { useLocation } from 'react-router-dom';
 import TableRow from './TableRow';
+import { useSelector } from 'react-redux';
 
 
 const Table = ({ tasks, awalItem, item, halaman, jumlahHalaman }) => {
   const path = String(useLocation().pathname.split('/')[1].replace('-', ' '));
+  const {theme} = useSelector(state=>state.auth);
   
 
 
   const TableHeader = () => (
-    <thead className="w-full border-b border-gray-300">
-      <tr className="w-full text-black  text-left">
+    <thead className={`w-full border-b seamlessly ${theme.darkMode ? 'text-white border-white' : 'text-black border-gray-300'} `}>
+      <tr className="w-full text-left">
         <th className="py-2 pr-6">Task Title</th>
         <th className="py-2">Deadline</th>
         <th className="py-2">Priority</th>
@@ -24,7 +26,7 @@ const Table = ({ tasks, awalItem, item, halaman, jumlahHalaman }) => {
 
   return (
     <>
-      <div className="bg-gray-100 px-2 md:px-4 pt-4 pb-9 shadow-md rounded w-full overflow-y-auto">
+      <div className={`${theme?.darkMode ? 'bg-gray-900' : 'bg-gray-100'} seamlessly px-2 md:px-4 pt-4 pb-9 shadow-md rounded w-full overflow-y-auto`}>
         <div className="">
           <table className="w-full">
             <TableHeader />

@@ -29,7 +29,7 @@ const TableRow = ({ task }) => {
   const deadlineTimeReverse = `${date}-${month}-${year}`;
   const [updateExpiredTask] = useUpdateExpiredMutation();
   const [updateTaskStage] = useUpdateStageTaskMutation();
-  const { user, startCount } = useSelector((state) => state.auth);
+  const { user, startCount, theme } = useSelector((state) => state.auth);
   const [condition, setCondition] = useState(false);
   const [timer, setTimer] = useState(task?.timer ?? false);
   const [count, setCount] = useState(true);
@@ -135,17 +135,17 @@ const TableRow = ({ task }) => {
 
   return (
     <>
-      <tr className={`border-b border-gray-200 text-gray-600  ${expired ? 'line-through bg-red-300/50' : 'hover:bg-gray-300/10'}`}>
+      <tr className={`border-b border-gray-200 ${theme?.darkMode ? 'text-neutral-300 hover:bg-gray-300/10' : 'text-gray-600 hover:bg-gray-300/60' }   ${expired ? 'line-through bg-red-300/50' : ''}`}>
         <td className="py-2 pr-8 sm:pr-0">
           <div className="flex items-center gap-2 lg:pr-0 pr-0 md:pr-4">
             <div className={`w-4 h-4 rounded-full pr-4 ${TASK_TYPE[task?.stage]}`}></div>
-            <p className="w-full line-clamp-2 text-base text-black">{task?.title}</p>
+            <p className={`w-full line-clamp-2 text-base ${theme?.darkMode ? 'text-white' : 'text-black'} `}>{task?.title}</p>
           </div>
         </td>
 
         <td className="py-2">
           <div className="flex items-center w-[7.5rem]">
-            <span className="text-sm text-gray-600 ">{timer ? task?.deadline.slice(0, 10) : 'No Deadline'}</span>
+            <span className="text-sm ">{timer ? task?.deadline.slice(0, 10) : 'No Deadline'}</span>
           </div>
         </td>
 
@@ -158,17 +158,17 @@ const TableRow = ({ task }) => {
 
         <td className="py-2">
           <div className="flex items-center w-[7.5rem]">
-            <span className="text-sm text-gray-600 ">{formatDate(new Date(task?.date))}</span>
+            <span className="text-sm ">{formatDate(new Date(task?.date))}</span>
           </div>
         </td>
 
         <td className="py-2">
           <div className="flex items-center gap-3 w-[9rem] sm:w-[7rem] lg:mr-0 mr-0 md:mr-5">
-            <div className="flex gap-2 items-center text-sm text-gray-600">
+            <div className="flex gap-2 items-center text-sm">
               <BiMessageDetail />
               <span>{task?.activities?.length}</span>
             </div>
-            <div className="flex gap-2 items-center text-sm text-gray-600">
+            <div className="flex gap-2 items-center text-sm">
               <MdAttachFile />
               <span>{task?.assets?.length}</span>
             </div>
@@ -180,7 +180,7 @@ const TableRow = ({ task }) => {
         </td>
 
         <td className="py-2">
-          <div className="flex border w-fit py-1 pr-7 md:pr-8 lg:pr-0">
+          <div className="flex w-fit py-1 pr-7 md:pr-8 lg:pr-0">
             {task?.team?.map((m, index) => (
               <div key={m._id} className={`w-7 h-7 border-2  rounded-full text-white flex items-center justify-center text-sm -mr-1 ${BGS[index % BGS.length]}`}>
                 {m?.image.length > 0 ? (
@@ -200,12 +200,12 @@ const TableRow = ({ task }) => {
 
         <td className="py-2 flex gap-2 md:gap-4 justify-end pr-6">
           {user?.isAdmin || user?.isUstadz ? (
-            <Button label="Edit" onClick={() => setOpenEdit(true)} type={'button'} className={'text-blue-600 hover:text-blue-500 sm:px-0 text-sm md:text-base'} />
+            <Button label="Edit" onClick={() => setOpenEdit(true)} type={'button'} className={` ${theme?.darkMode ? 'text-blue-400' : 'text-blue-600'} font-bold hover:text-blue-500 sm:px-0 text-sm md:text-base`} />
           ) : (
             <Button label="Null" onClick={() => {}} type={'button'} className={'text-blue-600 hover:text-blue-500 sm:px-0 text-sm md:text-base opacity-0'} />
           )}
           {user?.isAdmin ? (
-            <Button label="Delete" type={'button'} className={'text-red-700 hover:text-red-500 sm:px-0 text-sm md:text-base'} onClick={() => deleteClicks(task._id)} />
+            <Button label="Delete" type={'button'} className={`${theme?.darkMode ? 'text-red-400' : 'text-red-700'} hover:text-red-500 sm:px-0 font-bold text-sm md:text-base`} onClick={() => deleteClicks(task._id)} />
           ) : (
             <Button label="Null" type={'button'} className={'text-red-700 hover:text-red-500 sm:px-0 text-sm md:text-base opacity-0'} onClick={() => {}} />
           )}

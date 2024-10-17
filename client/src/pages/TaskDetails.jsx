@@ -1,16 +1,18 @@
 import clsx from 'clsx';
 import moment from 'moment';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FaBug, FaTasks, FaThumbsUp, FaUser } from 'react-icons/fa';
 import { GrInProgress } from 'react-icons/gr';
 import { MdKeyboardArrowDown, MdKeyboardArrowUp, MdKeyboardDoubleArrowUp, MdOutlineDoneAll, MdOutlineMessage, MdTaskAlt } from 'react-icons/md';
 import { RxActivityLog } from 'react-icons/rx';
 import { useParams } from 'react-router-dom';
-import { Loading, Button, Activities } from '../components';
+import { Loading, Button, Activities, Loading2 } from '../components';
 import Tabs from '../components/Tabs';
 import { PRIOTITYSTYELS, TASK_TYPE, getInitials } from '../utils';
 import { tasks } from '../assets/data';
 import { useGetTaskQuery } from '../redux/slices/TaskApiSlice';
+import { useSelector } from 'react-redux';
+import { FiRefreshCcw } from 'react-icons/fi';
 // import { useGetSingleTaskQuery, usePostTaskActivityMutation } from '../redux/slices/api/taskApiSlice';
 
 const assets = [
@@ -73,19 +75,24 @@ const TASKTYPEICON = {
 const act_types = ['Started', 'Completed', 'In Progress', 'Commented', 'Bug', 'Assigned'];
 const TaskDetails = () => {
   const { id } = useParams();
-  const {data, isLoading} = useGetTaskQuery({id});
+  const {data, isLoading, refetch: refetchitem} = useGetTaskQuery({id});
+  const {theme} = useSelector(state => state.auth)
+  const [loading, setLoading] = useState(false)
   
   const [selected, setSelected] = useState(parseInt(localStorage.getItem('selected')) || 0);
-  const task = data?.task ?? [];
-  console.log(task, 'dari details')
-  return (
+  let task = data?.task ?? [];
+
+  return !loading ? (
     <div className="w-full flex flex-col gap-3 mb-4 overflow-y-hidden p-4">
-      <h1 className="text-2xl text-gray-600 font-bold">{task?.title}</h1>
+      <div className='flex justify-between'>
+        <h1 className={`text-2xl ${theme?.darkMode ? 'text-white' : 'text-gray-600'} font-bold`}>{task?.title}</h1>
+        <Button onClick={()=>refetchitem()} icon={<FiRefreshCcw className="text-lg" />} label={'Refresh'} className={`flex text-white flex-row-reverse gap-3 items-center bg-blue-700 py-2 2xl:py-2.5`} />
+      </div>
 
       <Tabs setSelected={setSelected} tabs={TABS}>
         {selected == 0 ? (
           <>
-            <div className="w-full flex flex-col md:flex-row gap-5 2xl:gap-8 bg-gray-100 shadow-md p-8 overflow-y-auto">
+            <div className={`w-full seamlessly flex flex-col md:flex-row gap-5 2xl:gap-8 ${theme.darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100'} shadow-md p-8 overflow-y-auto`}>
               <div className="w-full md:w-1/2 space-y-8">
                 <div className="flex items-center gap-5">
                   <div className={clsx('flex gap-1 items-center text-base font-semibold px-3 py-1 rounded-full', PRIOTITYSTYELS[task?.priority], bgColor[task?.priority])}>
@@ -94,14 +101,14 @@ const TaskDetails = () => {
                   </div>
 
                   <div className={clsx('flex items-center gap-2')}>
-                    <div className={clsx('w-4 h-4 rounded-full', TASK_TYPE[task.stage])} />
-                    <span className="text-black uppercase">{task?.stage}</span>
+                    <div className={clsx('w-4 h-4 rounded-full', TASK_TYPE[task?.stage])} />
+                    <span className=" uppercase">{task?.stage}</span>
                   </div>
                 </div>
 
                 <p className="text-gray-500">Created At: {new Date(task?.date).toDateString()}</p>
 
-                <div className="flex items-center gap-8 p-4 border-y border-gray-200">
+                <div className={`flex items-center gap-8 p-4 border-y ${theme?.darkMode ? '' : 'border-gray-500'}`}>
                   <div className="space-x-2">
                     <span className="font-semibold">Assets :</span>
                     <span>{task?.assets?.length}</span>
@@ -119,7 +126,7 @@ const TaskDetails = () => {
                 </div>
 
                 <div className="space-y-4 ">
-                  <p className="text-gray-600 font-semibold test-sm">TASK TEAM</p>
+                  <p className={`text-gray-600 ${theme?.darkMode ? 'text-neutral-300' : 'text-gray-600'} font-semibold test-sm`}>TASK TEAM</p>
                   <div className="space-y-3">
                     {task?.team?.map((m, index) => (
                       <div key={index} className="flex gap-4 py-2 items-center border-t border-gray-200">
@@ -151,11 +158,11 @@ const TaskDetails = () => {
             </div>
           </>
         ) : (
-          <div><Activities activity={task.activities} stage={task?.stage} id={id} /></div>
+          <div><Activities activity={task?.activities} stage={task?.stage} id={id} /></div>
         )}
       </Tabs>
     </div>
-  );
+  ) : <Loading2 />;
 };
 
 export default TaskDetails;

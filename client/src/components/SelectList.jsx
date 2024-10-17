@@ -25,13 +25,13 @@ const SelectList = ({lists, selected, setSelected, label, theme}) => {
             leaveFrom='opacity-100'
             leaveTo='opacity-0'
           >
-            <Listbox.Options className='z-50 absolute mt-1 max-h-60 w-full overflow-y-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm'>
+            <Listbox.Options className={`z-50 absolute mt-1 max-h-60 w-full overflow-y-auto rounded-md ${theme?.darkMode ? 'bg-blue-900 text-white' : 'bg-white'} py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm`}>
               {lists.map((list, index) => (
                 <Listbox.Option
                   key={index}
                   className={({ active, selected }) =>
                     `relative cursor-default select-none py-2 pl-10 pr-4 ${selected? 'text-red-500' :''} ${
-                      active ? "bg-amber-100 text-amber-900" : "text-gray-900"
+                      active ? "bg-amber-100 text-amber-900" : `${theme?.darkMode ? 'text-white' : 'text-gray-900'}`
                     }`
                   }
                   value={list}

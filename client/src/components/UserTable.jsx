@@ -19,7 +19,7 @@ const UserTable = ({ users }) => {
   );
 
   const TableRow = ({ user }) => (
-    <tr className={`${theme.darkMode ? ' border-b border-white  text-white hover:bg-gray-400/20' : 'border-b border-gray-500  text-gray-600 hover:bg-gray-400/100'} ${user.isAdmin ? `${theme.darkMode ? 'bg-yellow-600' : 'bg-yellow-200'}` : user.isUstadz ? 'bg-blue-500/20' : ''}`}>
+    <tr className={`seamlessly ${theme.darkMode ? ' border-b border-white  text-white hover:bg-gray-400/20' : 'border-b border-gray-500  text-gray-600 hover:bg-gray-400/100'} ${user.isAdmin ? `${theme.darkMode ? 'bg-yellow-600' : 'bg-yellow-200'}` : user.isUstadz ? 'bg-blue-500/20' : ''}`}>
       <td className="py-2 px-3">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full text-white flex items-center justify-center text-sm bg-violet-600 mr-7 relative">
@@ -39,7 +39,7 @@ const UserTable = ({ users }) => {
     </tr>
   );
   return (
-    <div className={`lg:w-1/3 sm:w-full ${theme.darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100'}  px-2 md:px-3 pt-2 shadow-md rounded h-[510px] relative`}>
+    <div className={`lg:w-1/3 seamlessly sm:w-full ${theme.darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100'}  px-2 md:px-3 pt-2 shadow-md rounded h-[510px] relative`}>
       <div className="h-[90%] overflow-y-auto">
         <table className="w-full">
           <TableHeader />

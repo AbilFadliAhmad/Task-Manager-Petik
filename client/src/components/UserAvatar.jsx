@@ -14,7 +14,7 @@ import toast from 'react-hot-toast';
 const UserAvatar = () => {
   const [open, setOpen] = useState(false);
   const [openPassword, setOpenPassword] = useState(false);
-  const { user } = useSelector((state) => state.auth);
+  const { user, theme } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [logoutUser] = useLogoutMutation();
@@ -81,7 +81,7 @@ const UserAvatar = () => {
         </div>
       </Menu>
       <Profile open={open} setOpen={setOpen} />
-      <Password open={openPassword} setOpen={setOpenPassword} />
+      <Password theme={theme} open={openPassword} setOpen={setOpenPassword} />
     </div>
   );
 };

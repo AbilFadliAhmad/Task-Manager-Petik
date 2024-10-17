@@ -45,21 +45,21 @@ const UserList = ({ team, setTeam, leader, theme }) => {
   return isLoading ? (
     <Loading />
   ) : (
-    <div className="">
+    <div className="seamlessly">
       <Listbox value={selectedAdmin} onChange={handleChange} className="relative" multiple>
         <div className=''>
-        <p className={`absolute left-2 top-4 ${theme?.darkMode ? 'text-white' : 'text-gray-500'}  ${selectedAdmin.length > 0 ? 'hidden' : ''}`}>Member...</p>
+        <p className={`absolute left-2 top-4 ${theme?.darkMode ? 'text-white' : ''}  ${selectedAdmin.length > 0 ? 'hidden' : ''}`}>Member...</p>
           <ListboxButton disabled={pengguna.isAdmin ? true : false} className={'w-full cursor-pointer pl-3 pr-10 text-left px-3 py-2.5 2xl:py-3 sm:text-sm overflow-auto disabled:cursor-not-allowed'} onClick={onCheck}>
-            <p className='text-sm'>
+            <p className={`text-sm ${theme?.darkMode ? 'text-white' : ''}`}>
               {selectedAdmin.length > 0 ? selectedAdmin.map(item=>item.name).join(', ') : <FaRegCircleUser className='w-full h-full pr-[20rem] pb-4 invisible' />}
             </p>
           </ListboxButton>
-          <ListboxOptions className="z-50 absolute mt-2 max-h-60  overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm overflow-y-auto sm:w-[17rem] w-[13rem] border-2 border-gray-800/4">
+          <ListboxOptions className={`z-50 absolute mt-2 max-h-60  overflow-auto rounded-md ${theme?.darkMode ? 'bg-blue-900 text-white' : 'bg-white'} py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm overflow-y-auto sm:w-[17rem] w-[13rem] border-2 border-gray-800/4`}>
             {users?.map((user, index) => (
               <ListboxOption
                 key={index}
                 value={user}
-                className={({ active, selected }) => `relative cursor-default select-none py-2 pl-10 ${active ? 'bg-amber-100 text-amber-900' : 'text-gray-500'} ${selected ? 'text-red-900' : ''} `}
+                className={({ active, selected }) => `relative cursor-default select-none py-2 pl-10 ${active ? `${theme?.darkMode ? 'bg-gray-500 text-amber-900' : 'bg-amber-100 text-amber-900'}` : ''} ${selected ? '' : `${theme?.darkMode ? 'text-white' : ''}`} `}
               >
                 {({ selected }) => (
                   <div>

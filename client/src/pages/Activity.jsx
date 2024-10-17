@@ -80,7 +80,7 @@ const Activity = () => {
     login: <RiLoginCircleLine className="text-blue-600" />,
     delete: <RiDeleteBack2Fill className="text-red-900" />,
     logout: <FiLogOut className="text-red-600" />,
-    create: <IoCreateOutline className="text-green-900" />,
+    create: <IoCreateOutline className="text-cyan-400" />,
     update: <GrDocumentUpdate className="text-green-600" />,
     duplicate: <HiOutlineDocumentDuplicate className="text-yellow-600" />,
   };
@@ -145,7 +145,7 @@ const Activity = () => {
     <>
       <div className="w-full md:p-4 p-0 mb-6">
         <div className="flex items-center justify-between mb-8 flex-col md:flex-row">
-          <Title title="Activity Logs" />
+          <Title className={`${theme.darkMode ? 'text-white' : ''}`} title="Activity Logs" />
           <div className="flex gap-2 md:gap-4 items-center mt-4 md:mt-0">
             {/* <Button
               label="Delete PerHalaman"
@@ -183,7 +183,7 @@ const Activity = () => {
           </div>
         </div>
 
-        <div className={` ${theme.darkMode ? 'bg-gray-900' : 'bg-gray-100'} px-2 md:px-7 pt-4 pb-9 shadow-md rounded`}>
+        <div className={`seamlessly ${theme.darkMode ? 'bg-gray-900' : 'bg-gray-100'} px-2 md:px-7 pt-4 pb-9 shadow-md rounded`}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <TableHeader />

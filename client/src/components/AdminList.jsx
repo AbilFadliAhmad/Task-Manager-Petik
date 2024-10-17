@@ -74,17 +74,17 @@ const AdminList = ({ leader, setLeader, theme }) => {
           <ListboxOptions
             className={`z-50 absolute ${
               leader?.length == 0 ? 'mt-1' : leader?.length == 1 ? '-mt-12' : '-mt-10'
-            }  max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm overflow-y-auto w-[70%] border-2 border-gray-800/4`}
+            }  max-h-60 overflow-auto rounded-md ${theme?.darkMode ? 'bg-blue-950' : 'bg-white'}  py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm overflow-y-auto w-[70%] border-2 border-gray-800/4`}
           >
             {admin?.map((user, index) => (
               <ListboxOption
                 key={index}
                 value={user}
-                className={({ active, selected }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-amber-100 text-amber-900' : 'text-gray-500'} ${selected ? 'text-red-900' : ''} `}
+                className={({ active, selected }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? `${theme?.darkMode ? 'bg-gray-500 text-amber-900' : 'bg-amber-100 text-amber-900'}` : 'text-gray-500'} ${selected ? 'text-red-900' : ''} `}
               >
                 {({ selected }) => (
                   <div>
-                    <div className={clsx('flex items-center gap-2  truncate', selected ? 'font-medium' : 'font-normal')}>
+                    <div className={clsx('flex items-center gap-2  truncate', selected ? 'font-medium' : 'font-normal', theme?.darkMode ? 'text-white bg-transparent' : '')}>
                       <div className="w-6 h-6 rounded-full text-white flex items-center justify-center bg-violet-600">
                         {user?.image?.length > 1 ? (
                           <img className="w-full h-full rounded-full border-2 border-gray-300 shadow-md object-cover" src={user?.image} alt="" />

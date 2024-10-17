@@ -27,7 +27,7 @@ const Layout = () => {
 
       {<MobileSidebar />}
       {/* <Sidebar /> */}
-      <div className={`flex-1 overflow-y-auto ${theme.darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+      <div className={`flex-1 overflow-y-auto seamlessly ${theme.darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
         <Navbar />
         <div className="p-4 2xl:px-10">
           <Outlet />

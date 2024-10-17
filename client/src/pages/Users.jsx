@@ -81,7 +81,7 @@ const Users = () => {
     </thead>
     )
     const TableRow = ({user})=>(
-      <tr className={`${theme.darkMode ? 'border-white text-white hover:bg-gray-400/20' : 'border-gray-300 text-gray-600 hover:bg-gray-400/100'} border-b  ${user.isAdmin ? `${theme.darkMode ? 'bg-yellow-600' : 'bg-yellow-200'}` : user.isUstadz ? 'bg-blue-500/20' : ''}  text-sm sm:text-lg`}>
+      <tr className={`seamlessly ${theme.darkMode ? 'border-white text-white hover:bg-gray-400/20' : 'border-gray-300 text-gray-600 hover:bg-gray-400/100'} border-b  ${user.isAdmin ? `${theme.darkMode ? 'bg-yellow-600' : 'bg-yellow-200'}` : user.isUstadz ? 'bg-blue-500/20' : ''}  text-sm sm:text-lg`}>
         <td className='p-2'>
           <div className='flex items-center gap-3'>
             <div className={`w-11 h-11 rounded-full flex items-center justify-center ${user.image ? 'border-2 border-gray-300  sm:text-sm' : 'text-sm bg-blue-700 text-white'}`}>
@@ -134,7 +134,7 @@ const Users = () => {
             <Button onClick={() => {setOpen(true); setSelected(null)}} className={'flex flex-row-reverse gap-1 items-center bg-blue-500 text-white text-sm sm:text-lg w-[9rem] sm:w-[10.32rem]'} icon={<IoMdAdd className='text-lg' />} label={'Add New User'} />
           </div>
 
-          <div className={` ${theme.darkMode ? 'bg-gray-900' : 'bg-gray-100'} px-2 md:px-4 pt-4 pb-9 shadow-md rounded`}>
+          <div className={`seamlessly ${theme.darkMode ? 'bg-gray-900' : 'bg-gray-100'} px-2 md:px-4 pt-4 pb-9 shadow-md rounded`}>
           {isLoading ? (
             <Loading />
           ) : (
@@ -166,6 +166,7 @@ const Users = () => {
       />
 
       <UserAction
+      theme={theme}
         open={openAction}
         setOpen={setOpenAction}
         onClick={userActionHandler}

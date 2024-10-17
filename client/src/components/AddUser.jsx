@@ -11,7 +11,7 @@ import { loadingDatab } from "../utils";
 
 const AddUser = ({ open, setOpen, userData }) => {
   let defaultValues = userData ?? {};
-  const { user } = useSelector((state) => state.auth);
+  const { user, theme } = useSelector((state) => state.auth);
   const [registerNewUser, {isLoading}] = useRegisterMutation()
   const [updateUser, {isLoading : isUpdating}] = useUpdateMutation()
   const { data, isLoading: isLoadingList, refetch } = useListQuery()
@@ -103,6 +103,7 @@ const AddUser = ({ open, setOpen, userData }) => {
           </div>
           <div className='mt-2 flex flex-col gap-6'>
             <Textbox
+            theme={theme}
               placeholder='Full name'
               type='text'
               name='name'
@@ -114,6 +115,7 @@ const AddUser = ({ open, setOpen, userData }) => {
               error={errors.name ? errors.name.message : ""}
             />
             <Textbox
+            theme={theme}
               placeholder='Title'
               type='text'
               name='title'
@@ -126,6 +128,7 @@ const AddUser = ({ open, setOpen, userData }) => {
             />
 
             <Textbox
+            theme={theme}
               placeholder='Email Address'
               type='email'
               name='email'
@@ -140,6 +143,7 @@ const AddUser = ({ open, setOpen, userData }) => {
 
             {!userData || user.isAdmin && (
               <Textbox
+              theme={theme}
                 placeholder='Password'
                 type='text'
                 name='sandi'
@@ -153,6 +157,7 @@ const AddUser = ({ open, setOpen, userData }) => {
             )}
 
             <Textbox
+            theme={theme}
               placeholder='Role'
               type='text'
               name='role'
@@ -170,7 +175,7 @@ const AddUser = ({ open, setOpen, userData }) => {
               <Loading />
             </div>
           ) : (
-            <div className='py-3 mt-4 sm:flex sm:flex-row-reverse'>
+            <div className='py-3 mt-4 sm:flex gap-3 sm:flex-row-reverse'>
               <Button
                 type='submit'
                 className='bg-blue-600 px-8 text-sm font-semibold text-white hover:bg-blue-700  sm:w-auto'
@@ -179,7 +184,7 @@ const AddUser = ({ open, setOpen, userData }) => {
 
               <Button
                 type='button'
-                className='bg-white px-5 text-sm font-semibold text-gray-900 sm:w-auto'
+                className='bg-red-500 px-9 text-sm font-semibold text-white sm:w-auto'
                 onClick={() => setOpen(false)}
                 label='Cancel'
               />

@@ -44,7 +44,7 @@ export default function ConfirmationDialog({ open, setOpen, msg, setMsg = () => 
   );
 }
 
-export function UserAction({ open, setOpen, onClick = () => {}, status }) {
+export function UserAction({ open, setOpen, onClick = () => {}, status, theme }) {
   const closeDialog = () => {
     setOpen(false);
   };
@@ -54,14 +54,14 @@ export function UserAction({ open, setOpen, onClick = () => {}, status }) {
       <ModalWrapper open={open} setOpen={closeDialog}>
         <div className="py-4 w-full flex flex-col gap-4 items-center justify-center">
           <Dialog.Title as="h3" className="">
-            <p className={clsx('p-3 rounded-full ', 'text-red-600 bg-red-200')}>
+            <p className={clsx('p-3 rounded-full ', `text-red-600 ${theme.darkMode ? 'bg-red-900' : 'bg-red-200'}`)}>
               <FaQuestion size={60} />
             </p>
           </Dialog.Title>
 
-          <p className="text-center text-gray-500">{`Apakah kamu yakin ingin ${status ? 'Menonaktifkan' : 'Mengaktifkan'} akun ini?`}</p>
+          <p className={`text-center ${theme.darkMode ? 'text-white' : 'text-gray-500'}`}>{`Apakah kamu yakin ingin ${status ? 'Menonaktifkan' : 'Mengaktifkan'} akun ini?`}</p>
 
-          <div className="bg-gray-50 py-3 sm:flex sm:flex-row-reverse gap-4">
+          <div className={`${theme.darkMode ? 'bg-gray-900' : 'bg-gray-50'} py-3 sm:flex sm:flex-row-reverse gap-4`}>
             <Button type="button" className={clsx(' px-8 text-sm font-semibold text-white sm:w-auto', 'bg-red-600 hover:bg-red-500')} onClick={onClick} label={'Yes'} />
 
             <Button type="button" className="bg-white px-8 text-sm font-semibold text-gray-900 sm:w-auto border" onClick={() => closeDialog()} label="No" />

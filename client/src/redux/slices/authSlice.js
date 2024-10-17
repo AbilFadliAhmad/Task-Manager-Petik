@@ -6,7 +6,7 @@ const initialState = {
   location: false,
   search:localStorage.getItem('search') || '',
   startCount: true, 
-  theme: localStorage.getItem('theme') ? JSON.parse(localStorage.getItem('theme')) : null
+  theme: localStorage.getItem('theme') ? JSON.parse(localStorage.getItem('theme')) : {darkMode: false, lightMode: true}
 };
 
 const authSlice = createSlice ({

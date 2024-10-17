@@ -19,7 +19,7 @@ const TaskTable = ({tasks}) => {
   const {theme} = useSelector(state => state.auth)
 
   const TableRow = ({task})=>(
-    <tr className={`${theme.darkMode ? 'border-b border-white text-neutral-200 hover:bg-gray-300/20' : 'border-b border-gray-500 text-black hover:bg-gray-300/100'}`}>
+    <tr className={`seamlessly ${theme.darkMode ? 'border-b border-white text-neutral-200 hover:bg-gray-300/20' : 'border-b border-gray-500 text-black hover:bg-gray-300/100'}`}>
       <td className='py-2 px-3'>
         <div className='flex items-center gap-2'>
           <div className={clsx('w-4 h-4 rounded-full pr-4', TASK_TYPE[task.stage])} />
@@ -65,7 +65,7 @@ const TaskTable = ({tasks}) => {
 
   return (
     <>
-     <div className={`w-full lg:w-2/3 ${theme.darkMode ? 'bg-gray-900' : 'bg-gray-100'}  px-2 md:px-4 pt-2 pb-4 shadow-md rounded`}>
+     <div className={`w-full seamlessly lg:w-2/3 ${theme.darkMode ? 'bg-gray-900' : 'bg-gray-100'}  px-2 md:px-4 pt-2 pb-4 shadow-md rounded`}>
       <table className='w-full overflow-auto'>
         <TableHeadler />
         <tbody>

@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import { IoCameraSharp } from 'react-icons/io5';
 
 const Profile = ({ open, setOpen }) => {
-  const { user } = useSelector((state) => state.auth);
+  const { user, theme } = useSelector((state) => state.auth);
   const [gambar, setGambar] = React.useState(user.image ?? null);
   const [objectUrl, setObjectUrl] = React.useState(false);
   let defaultValues = user ?? {};
@@ -60,11 +60,11 @@ const Profile = ({ open, setOpen }) => {
                 </label>
               </div>
             </div>
-            <h1 className="text-2xl font-bold mb-5">Akun Profil</h1>
-            <Textbox label={'Nama'} placeholder={'Nama Akun'} className={'w-full rounded'} register={register('name', { required: 'Full name is required!' })} error={errors.name ? errors.name.message : ''} />
-            <Textbox label={'Title'} placeholder={'Title Akun'} className={'w-full rounded'} register={register('title', { required: 'title is required!' })} error={errors.title ? errors.title.message : ''} />
-            <Textbox label={'Email'} placeholder={'Email Pengguna'} className={'w-full rounded '} register={register('email', { required: 'Email is required!' })} error={errors.email ? errors.email.message : ''} status={user} />
-            <Textbox label={'Role'} placeholder={'Role Pengguna'} className={'w-full rounded'} register={register('role', { required: 'Role content is required!' })} error={errors.role ? errors.role.message : ''} />
+            <h1 className={`text-2xl font-bold mb-5 ${theme.darkMode ? 'text-white' : ''}`}>Akun Profil</h1>
+            <Textbox theme={theme} label={'Nama'} placeholder={'Nama Akun'} className={'w-full rounded'} register={register('name', { required: 'Full name is required!' })} error={errors.name ? errors.name.message : ''} />
+            <Textbox theme={theme} label={'Title'} placeholder={'Title Akun'} className={'w-full rounded'} register={register('title', { required: 'title is required!' })} error={errors.title ? errors.title.message : ''} />
+            <Textbox theme={theme} label={'Email'} placeholder={'Email Pengguna'} className={'w-full rounded '} register={register('email', { required: 'Email is required!' })} error={errors.email ? errors.email.message : ''} status={user} />
+            <Textbox theme={theme} label={'Role'} placeholder={'Role Pengguna'} className={'w-full rounded'} register={register('role', { required: 'Role content is required!' })} error={errors.role ? errors.role.message : ''} />
           </div>
           {isLoading ? <div className="flex flex-row-reverse gap-5 mt-5"><Loading /></div> 
           : 

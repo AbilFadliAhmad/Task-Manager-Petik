@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 const Card = ({ icon, bg, label, count}) => {
   const {theme} = useSelector(state => state.auth)
   return (
-    <div className={`w-full h-32 ${theme.darkMode ? 'bg-gray-900 text-white' : ' bg-gray-100 text-gray-600'} p-5 shadow-md rounded-md flex items-center justify-between`}>
+    <div className={`w-full h-32 seamlessly ${theme.darkMode ? 'bg-gray-900 text-white' : ' bg-gray-100 text-gray-600'} p-5 shadow-md rounded-md flex items-center justify-between`}>
         <div className='h-full flex flex-1 flex-col justify-between'>
             <p className='text-base '>{label}</p>
             <span className='text-2xl font-bold'>{count}</span>
