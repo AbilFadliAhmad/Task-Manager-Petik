@@ -25,6 +25,8 @@ const Activity = () => {
   const [text, setText] = useState('');
   const [action, setAction] = useState('');
   const {theme} = useSelector((state)=>state.auth)
+  const itemPerPage = 30;
+  const halaman = new URLSearchParams(window.location.search).get('halaman') || 1;
 
   const openLog = (log) => {
     setText(log);
@@ -175,7 +177,7 @@ const Activity = () => {
               onKeyDown={handleKeyDown}
               onChange={(e) => setSearching(e.target.value)}
               placeholder="Cari Berdasarkan Kolom Isi..."
-              className="w-full p-2 pl-10 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full p-2 pl-10 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent no-seamlessly"
             />
             <svg className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${theme.darkMode ? 'text-black' : 'text-gray-400'}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" onClick={handleSearch}>
               <path fillRule="evenodd" d="M12.9 14.32a8 8 0 111.414-1.414l4.387 4.387a1 1 0 01-1.414 1.414l-4.387-4.387zM8 14a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />

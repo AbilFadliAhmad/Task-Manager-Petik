@@ -15,6 +15,10 @@
   transition: 0.5s all ease;
 }
 
+.no-seamlessly {
+  transition: 0s !important;
+}
+
 .cell {
   display: inline-block;
   width: 49%;
