@@ -59,18 +59,21 @@ const TableRow = ({ task }) => {
   };
 
   useEffect(() => {
-    if (!count && !expired) {
-      const updateExpired = async () => {
-        try {
-          setExpired(true);
-          const object = { id: task?._id, isExpired: true };
-          await updateExpiredTask(object);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      updateExpired();
-    } else if (count && expired) {
+    if (timer) {
+      // if(count && !expired) toast.error('Task ini sudah melewati batas deadline')
+      if (!count && !expired) {
+        const updateExpired = async () => {
+          try {
+            setExpired(true);
+            const object = { id: task?._id, isExpired: true, blink: false };
+            await updateExpiredTask(object);
+          } catch (error) {
+            console.log(error);
+          }
+        };
+        updateExpired();
+      } 
+    } else if(!timer && task.isExpired) {
       const updateExpired = async () => {
         try {
           setExpired(false);
@@ -81,6 +84,8 @@ const TableRow = ({ task }) => {
         }
       };
       updateExpired();
+    } else if (!timer) {
+      
     }
   }, [count]);
 
@@ -96,6 +101,7 @@ const TableRow = ({ task }) => {
   useEffect(() => {
     if (condition == true) {
       startCountdown();
+      handleBlinkText();
       setCondition(false);
     }
   }, [condition]);
@@ -131,6 +137,15 @@ const TableRow = ({ task }) => {
       clearInterval(intervalRef.current);
       return;
     }, 1000);
+  };
+
+  const handleBlinkText = async() => {
+    if (currentDate == deadlineTimeReverse) {
+      const object = { id: task?._id, blink:true };
+      if(!task.blink) {
+        await updateExpiredTask(object);
+      }
+    }
   };
 
   return (

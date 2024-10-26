@@ -16,7 +16,7 @@ import { setStartCount } from "../redux/slices/authSlice";
 
 
 const TaskDialog = ({task}) => {
-  const {search} = useSelector(state=>state.auth)
+  const {user, theme, startCount, search} = useSelector(state=>state.auth)
   const object = {isTrashed:false, search}
   const [openEdit, setOpenEdit] = useState(false)
   const [openDialog, setOpenDialog] = useState(false)
@@ -24,7 +24,6 @@ const TaskDialog = ({task}) => {
   const [duplicate, {isLoading}] = useDuplicateTaskMutation()
   const [deleteTask] = useDeleteTaskMutation()
   const [refetch] = useListTaskMutation()
-  const {user, theme, startCount} = useSelector(state=>state.auth)
   const dispatch = useDispatch();
 
   useEffect(()=>{
@@ -116,7 +115,7 @@ const TaskDialog = ({task}) => {
                       <button
                         onClick={el?.onClick}
                         className={`${
-                          active ? "bg-blue-500 text-white" : "text-gray-900"
+                          active ? "bg-blue-500 text-white" : `${theme?.darkMode ? 'text-white' : 'text-gray-900'}`
                         } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                       >
                         {el.icon}

@@ -4,6 +4,7 @@ import { userModel } from '../models/UserModel.js';
 import { v2 as cloudinary } from 'cloudinary';
 import _ from 'lodash';
 import { historyModel } from '../models/historyModel.js';
+import fs from 'fs'
 
 const tanggalIndo = (date) => {
   const hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -12,28 +13,32 @@ const tanggalIndo = (date) => {
   return `${hari[date.getDay()]} ${String(date.getDate()).padStart(2, '0')} ${bulan[date.getMonth()]} ${date.getFullYear()}`;
 };
 
-const sameDate = (d1, d2) => (
-  d1.getFullYear() === d2.getFullYear() &&
-  d1.getMonth() === d2.getMonth() &&
-  d1.getDate() === d2.getDate()
-);
-
+const sameDate = (d1, d2) => d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
 
 const createTask = async (req, res) => {
   try {
     const { userId, leader: ustadz } = req.user;
     const { title, team = [], stage, date, priority, leader = [], deadline = [], timer = false } = req.body;
-    console.log(date, 'date server');
-    console.log(typeof date, 'jenis date server');
 
     if (timer == true && deadline.length == 0) return res.status(401).json({ success: false, message: 'Jika mengaktifkan timer, Harap tetapkan tanggal Deadline' });
-    const image = req.file || req.body.image;
     const tanggal = new Date(String(date));
     const user = await userModel.findById(userId);
+    const image = req.file || req.body.image;
+    console.log('Upload endpoint called');
+    console.log('File received:', req.file);
+    console.log('Image path:', image?.path);
+
     if (!image) {
       return res.status(401).json({ success: false, message: 'Assets Tidak Boleh Kosong' });
     }
     const gambarCloudinary = await cloudinary.uploader.upload(image.path, { resource_type: 'image' });
+    fs.unlink(image.path, (err) => {
+      if (err) {
+        console.error('Error deleting local file:', err);
+      } else {
+        console.log('Successfully deleted local file');
+      }
+    });
 
     let text = 'Tugas baru dengan judul: ' + title + ' telah Ditetapkan.';
     text = text + ` Prioritas tugas ini disetting di level ${priority}, tugas ini ditetapkan saat ${tanggalIndo(tanggal)}. Terima Kasih!!!`;
@@ -351,7 +356,7 @@ const updateTask = async (req, res) => {
   try {
     const { userId, leader: ustadz, isAdmin: isLeader } = req.user;
     const user = await userModel.findById(userId);
-    const { title, date, team = [], stage, priority, assets = [], leader = [], id, timer = null, deadline = []} = req.body;
+    const { title, date, team = [], stage, priority, assets = [], leader = [], id, timer = null, deadline = [] } = req.body;
     const notifArray = await notificationModel.find({ task: id });
     const notif = notifArray[0];
     const image = req.file || req.body.image;
@@ -369,6 +374,13 @@ const updateTask = async (req, res) => {
       const imageCloudinary = await cloudinary.uploader.upload(image.path, { resource_type: 'image' });
       task.assets[0] = imageCloudinary.secure_url;
       task.public_id = imageCloudinary.public_id;
+      fs.unlink(image.path, (err) => {
+        if (err) {
+          console.error('Error deleting local file:', err);
+        } else {
+          console.log('Successfully deleted local file');
+        }
+      });
     }
 
     task.title = title;
@@ -546,17 +558,17 @@ const listTasks = async (req, res) => {
   const { userId, isUstadz, isAdmin } = req.user;
   const { search, isTrashed, itemPerPage, awalItem, path, arrayItem } = req.body;
   let object = [];
-  if(arrayItem?.length > 0) {
-    const normal = arrayItem.some(item=> item == 'normal')
-    const timer = arrayItem.some(item=>item == 'timer')
-    const expired = arrayItem.some(item=>item == 'expired')
-    const blink = arrayItem.some(item=>item == 'blink')
+  if (arrayItem?.length > 0) {
+    const normal = arrayItem.some((item) => item == 'normal');
+    const timer = arrayItem.some((item) => item == 'timer');
+    const expired = arrayItem.some((item) => item == 'expired');
+    const blink = arrayItem.some((item) => item == 'blink');
 
-    if(normal) object.push({ title: { $regex: search, $options: 'i' }, isTrashed, timer:false})
-    if(timer) object.push({ title: { $regex: search, $options: 'i' }, isTrashed, timer:true})
-    if(expired) object.push({ title: { $regex: search, $options: 'i' }, isTrashed, isExpired:true})
-    if(blink) object.push({ title: { $regex: search, $options: 'i' }, isTrashed, blink:true})
-      console.log('status')
+    if (normal) object.push({ title: { $regex: search, $options: 'i' }, isTrashed, timer: false });
+    if (timer) object.push({ title: { $regex: search, $options: 'i' }, isTrashed, timer: true });
+    if (expired) object.push({ title: { $regex: search, $options: 'i' }, isTrashed, isExpired: true });
+    if (blink) object.push({ title: { $regex: search, $options: 'i' }, isTrashed, blink: true });
+    console.log('status');
   } else {
     const status = path == 'tasks' || path == 'timer' || path == 'expired' || path == 'trash' || path == 'blink' ? ['todo', 'in progress', 'completed', 'expired'] : [path];
     const expired = path == 'expired' ? true : false;
@@ -564,13 +576,26 @@ const listTasks = async (req, res) => {
     const blink = path == 'blink' ? true : false;
     object = [{ title: { $regex: search, $options: 'i' }, isTrashed, stage: { $in: status }, ...(timer && { timer }), ...(expired && { isExpired: expired }), ...(blink && { blink: true }) }];
   }
-  
+
   try {
     if (isAdmin) {
-      const response = await taskModel.find({$or: object}).populate('team', 'name title role email isActive image isAdmin isUstadz leader').populate('leader', 'name image email role title').sort({ _id: -1 }).skip(Number(awalItem ?? 0)).limit(Number(itemPerPage ?? 25)+1 );
+      const response = await taskModel
+        .find({ $or: object })
+        .populate('team', 'name title role email isActive image isAdmin isUstadz leader')
+        .populate('leader', 'name image email role title')
+        .sort({ _id: -1 })
+        .skip(Number(awalItem ?? 0))
+        .limit(Number(itemPerPage ?? 25) + 1);
       return res.status(200).json({ success: true, message: 'Berhasil mengambil data Tasks', data: response });
     } else if (isUstadz) {
-      const response = await taskModel.find({ leader: userId }).find({$or: object}).populate('team', 'name title role email isActive image isAdmin isUstadz leader').populate('leader', 'name image email role title').sort({ _id: -1 }).skip(Number(awalItem ?? 0)).limit(Number(itemPerPage ?? 25)+1 );
+      const response = await taskModel
+        .find({ leader: userId })
+        .find({ $or: object })
+        .populate('team', 'name title role email isActive image isAdmin isUstadz leader')
+        .populate('leader', 'name image email role title')
+        .sort({ _id: -1 })
+        .skip(Number(awalItem ?? 0))
+        .limit(Number(itemPerPage ?? 25) + 1);
       return res.status(200).json({ success: true, message: 'Berhasil mengambil data Tasks', data: response });
     } else {
       const response = await taskModel.find({ team: userId }).populate('team', 'name title role email isActive image isAdmin isUstadz leader').populate('leader', 'name image email role title').sort({ _id: -1 });

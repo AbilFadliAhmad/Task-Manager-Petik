@@ -7,7 +7,7 @@ import { connectDb } from './config/Db.js'
 import { errorHandler, RouteNotFound } from './middlewares/errorMiddleware.js'
 import { userRoute } from './routes/UserRoute.js'
 import { taskRoute } from './routes/TaskRoute.js'
-import { connectCloudinary } from './config/Cloudinary.js'
+import { connectCloudinary } from './middlewares/muttler.js'
 
 // Middleware
 const app = express()
@@ -30,8 +30,8 @@ app.use('/api/task', taskRoute)
 app.use(RouteNotFound)
 app.use(errorHandler)
 
-connectDb()
-connectCloudinary()
+connectDb();
+connectCloudinary();
 
 
 app.listen(port, ()=>console.log(`Server sekarang berjalan di PORT: ${port}`))
