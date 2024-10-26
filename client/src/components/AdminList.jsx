@@ -22,24 +22,27 @@ const AdminList = ({ leader, setLeader, theme }) => {
   const [selectedAdmin, setSelectedAdmin] = useState([]);
 
   const onCheck = (e) => {
-    if (selectedAdmin.length > 0) {
-      const confirm = window.confirm('Apakah kamu yakin ingin mengganti pemimpin tugas ini?');
-      if (!confirm) {
-        e.preventDefault();
-        return;
-      }
-      setLeader([]);
-      setSelectedAdmin([]);
-    }
+    // if (selectedAdmin.length > 0) {
+    //   const confirm = window.confirm('Apakah kamu yakin ingin mengganti pemimpin tugas ini?');
+    //   if (!confirm) {
+    //     e.preventDefault();
+    //     return;
+    //   }
+    //   setLeader([]);
+    //   setSelectedAdmin([]);
+    // }
   };
 
-  const handleChange = async (e) => {
-    await setSelectedAdmin(e);
-    await setLeader(e.map((el) => el._id));
-    if (selectedAdmin?.length > 2) {
-      alert('Tidak boleh lebih dari 3 pemimpin');
-      setSelectedAdmin([]);
-      setLeader([]);
+  const handleChange = async (data) => {
+    const lastIndexAdmin = selectedAdmin.length - 1;
+    if(leader.some(user => user._id == data._id)) {
+      setLeader(leader.filter((user) => user._id !== data._id));
+      setSelectedAdmin(selectedAdmin.filter((user) => user._id !== data._id));
+    } else {
+      selectedAdmin.length == 3 && setSelectedAdmin(selectedAdmin.slice(0, lastIndexAdmin)); 
+      leader.length == 3 && setLeader(leader.slice(0, lastIndexAdmin)); 
+      setLeader((prev) => [...prev, data]);
+      setSelectedAdmin((prev) => [...prev, data]);
     }
   };
 
@@ -49,11 +52,14 @@ const AdminList = ({ leader, setLeader, theme }) => {
     }
   }, []);
 
+  console.log(leader, 'keader bang')
+
+  console.log(leader, 'pemimpin')
   return isLoading ? (
     <Loading />
   ) : (
     <div className="w-[3.5rem] border-r-[3px]">
-      <Listbox value={selectedAdmin} onChange={handleChange} className="h-full " multiple>
+      <Listbox className="h-full " multiple>
         <div className="">
           <div className={`h-full flex justify-center items-center flex-wrap ${leader.length > 0 ? '' : 'hidden'}`}>
             {leader.length > 0
@@ -72,19 +78,21 @@ const AdminList = ({ leader, setLeader, theme }) => {
             <span>{leader.length > 0 ? <FaRegCircleUser className="w-14 h-14 absolute right-0 -top-12 opacity-0" /> : <FaRegCircleUser className={`w-8 h-8 ${theme?.darkMode ? 'text-white' : ''}`} />}</span>
           </ListboxButton>
           <ListboxOptions
-            className={`z-50 absolute ${
-              leader?.length == 0 ? 'mt-1' : leader?.length == 1 ? '-mt-12' : '-mt-10'
-            }  max-h-60 overflow-auto rounded-md ${theme?.darkMode ? 'bg-blue-950' : 'bg-white'}  py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm overflow-y-auto w-[70%] border-2 border-gray-800/4`}
+            className={`z-50 absolute ${leader?.length == 0 ? 'mt-1' : leader?.length == 1 ? '-mt-12' : '-mt-10'}  max-h-60 overflow-auto rounded-md ${
+              theme?.darkMode ? 'bg-blue-950' : 'bg-white'
+            }  py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm overflow-y-auto w-[70%] border-2 border-gray-800/4`}
           >
             {admin?.map((user, index) => (
               <ListboxOption
+                onClick={() => handleChange(user)}
                 key={index}
                 value={user}
-                className={({ active, selected }) => `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? `${theme?.darkMode ? 'bg-gray-500 text-amber-900' : 'bg-amber-100 text-amber-900'}` : 'text-gray-500'} ${selected ? 'text-red-900' : ''} `}
+                className={({ active, selected }) =>
+                  `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? `${theme?.darkMode ? 'bg-gray-500 text-amber-900' : 'bg-amber-100 text-amber-900'}` : 'text-gray-500'} ${selected ? 'text-red-900' : ''} `
+                }
               >
-                {({ selected }) => (
                   <div>
-                    <div className={clsx('flex items-center gap-2  truncate', selected ? 'font-medium' : 'font-normal', theme?.darkMode ? 'text-white bg-transparent' : '')}>
+                    <div className={clsx('flex items-center gap-2  truncate', theme?.darkMode ? 'text-white bg-transparent' : '')}>
                       <div className="w-6 h-6 rounded-full text-white flex items-center justify-center bg-violet-600">
                         {user?.image?.length > 1 ? (
                           <img className="w-full h-full rounded-full border-2 border-gray-300 shadow-md object-cover" src={user?.image} alt="" />
@@ -94,13 +102,12 @@ const AdminList = ({ leader, setLeader, theme }) => {
                       </div>
                       <span>{user.name}</span>
                     </div>
-                    {selected ? (
+                    {selectedAdmin.some((admin) => admin._id === user._id) ? (
                       <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
                         <MdCheck className="h-5 w-5" aria-hidden="true" />
                       </span>
                     ) : null}
                   </div>
-                )}
               </ListboxOption>
             ))}
           </ListboxOptions>

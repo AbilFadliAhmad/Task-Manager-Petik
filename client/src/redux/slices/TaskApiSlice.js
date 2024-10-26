@@ -73,15 +73,6 @@ export const TaskApiSlice = apiSlice.injectEndpoints({
                 credentials: "include",
             })
         }),
-        updateExpired:builder.mutation({
-            query: (data) => ({
-                url: `${TASK_URL}/is-expired`,
-                method: "PUT",
-                body: data,
-                credentials: "include",
-            })
-        }),
-
         postActivity: builder.mutation({
             query: (data) => ({
                 url: `${TASK_URL}/activity`,

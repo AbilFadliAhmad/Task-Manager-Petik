@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MdOutlineSearch } from 'react-icons/md';
 import { setOpenSidebar } from '../redux/slices/authSlice';
 import { UserAvatar, NotificationPanel } from '.';
@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 const Navbar = () => {
-  const [input, setInput]  = React.useState(localStorage.getItem('search') || '')
+  const [input, setInput]  = useState(localStorage.getItem('search') || '')
   const { theme } = useSelector((state) => state.auth);
   const dispatch = useDispatch()
   const location = useLocation().pathname.split('/')[1]

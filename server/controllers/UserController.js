@@ -201,7 +201,7 @@ const dropdownUser = async(req,res)=>{
 
 const updateTeam = async(req,res)=>{
     try {
-        const {id, title, role, email, name} = req.body
+        const {id, title, role, email, name, password} = req.body
         const image = req.file || req.body
         const {userId} = req.user
         const pemimpin = await userModel.findById(userId)
@@ -232,6 +232,7 @@ const updateTeam = async(req,res)=>{
             user.email = email
             user.title = title
             user.role = role
+            user.password = !!password ? password : user.password
             await user.save()
             res.status(200).json({success:true, message:'Berhasil mengupdate data user', data:user})
         }
@@ -475,9 +476,9 @@ const createJWT = (res, userId) => {
 
 const listHistory = async(req,res)=>{
     try {
-        const {search} = req.body
+        const {search, itemPerPage, awalItem} = req.body
         const object = {rangkuman: {$regex: search, $options: 'i'}}
-        const logs = await historyModel.find(object).populate('by', 'name image').sort({_id: -1});
+        const logs = await historyModel.find(object).populate('by', 'name image').sort({_id: -1}).skip(Number(awalItem)).limit(Number(itemPerPage) + 1);
         res.status(200).json({success:true, message:"Done", logs});
     } catch (error) {
         console.log(error)

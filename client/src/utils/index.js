@@ -53,6 +53,7 @@ export const Border = ['border-t-green-600', 'border-t-yellow-600', 'border-t-bl
 export const act_types = ['Assigned', 'Started', 'In Progress', 'Commented', 'Bug', 'Completed'];
 export const LISTS = ['TODO', 'IN PROGRESS', 'COMPLETED'];
 export const PRIORITY = ['HIGH', 'MEDIUM', 'NORMAL'];
+
 export const loadingDatab = async (data, success, error, durationSuccess) => {
   toast.promise(
     data,
@@ -71,4 +72,19 @@ export const loadingDatab = async (data, success, error, durationSuccess) => {
       },
     }
   );
+};
+
+export const filteringDataTasks = (datas) => {
+  let array = [];
+  datas.map((data) => {
+    if (data.timer) {
+      if (data.blink) return array.push('blink');
+      if (data.isExpired) return array.push('expired');
+      array.push('timer');
+    } else {
+      array.push('normal');
+    }
+  });
+  const uniqueArray = [...new Set(array)];
+  return uniqueArray;
 };

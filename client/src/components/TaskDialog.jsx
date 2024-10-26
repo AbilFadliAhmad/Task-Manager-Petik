@@ -6,7 +6,7 @@ import { HiDuplicate } from "react-icons/hi";
 import { MdAdd, MdOutlineEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Menu, Transition } from "@headlessui/react";
-import {AddTask, AddSubTask, ConfirmationDialog, ShowMenu} from ".";
+import {AddTask,  ConfirmationDialog, ShowMenu} from ".";
 import { useDeleteTaskMutation, useDuplicateTaskMutation, useListTaskMutation } from "../redux/slices/TaskApiSlice";
 import { useListQuery } from "../redux/slices/ActionApiSlice";
 import toast from "react-hot-toast";
@@ -18,14 +18,13 @@ import { setStartCount } from "../redux/slices/authSlice";
 const TaskDialog = ({task}) => {
   const {search} = useSelector(state=>state.auth)
   const object = {isTrashed:false, search}
-  const [open, setOpen] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
   const [openDialog, setOpenDialog] = useState(false)
   const navigate = useNavigate()
   const [duplicate, {isLoading}] = useDuplicateTaskMutation()
   const [deleteTask] = useDeleteTaskMutation()
   const [refetch] = useListTaskMutation()
-  const {user, theme} = useSelector(state=>state.auth)
+  const {user, theme, startCount} = useSelector(state=>state.auth)
   const dispatch = useDispatch();
 
   useEffect(()=>{
@@ -35,6 +34,13 @@ const TaskDialog = ({task}) => {
       dispatch(setStartCount(true))
     }
   }, [openEdit])
+
+  useEffect(()=>{
+    if(task.isExpired && !user.isAdmin) {
+      setOpenEdit(false)
+      setOpenDialog(false)
+    }
+  }, [startCount])
   
   const duplicateHanlder = async() => {
     try {
@@ -57,12 +63,14 @@ const TaskDialog = ({task}) => {
   }
 
   const deleteHandler= async()=>{
+    let l = toast.loading('sedang menghapus tugas...')
     try {
       const object = {
         id: task._id,
         action: "deleteTemporary"
       }
       const result = await deleteTask(object)
+      toast.dismiss(l)
       if(result.data.success){
         loadingDatab(refetch(object), `Berhasil Menghapus Tugas berjudul ${task?.title}`, `Gagal Menghapus Tugas berjudul ${task?.title}`)
         .then(()=>setOpenDialog(false))
@@ -70,6 +78,7 @@ const TaskDialog = ({task}) => {
       }
     } catch (error) {
       console.log(error);
+      toast.dismiss(l)
       toast.error("Ada sesuatu yang salah saat menghapus task");
     }
   }
@@ -144,8 +153,6 @@ const TaskDialog = ({task}) => {
         task={task}
         key={new Date().getTime()}
       />
-
-      <AddSubTask open={open} setOpen={setOpen} />
 
       <ConfirmationDialog
         open={openDialog}

@@ -28,22 +28,25 @@ const TaskCard = ({ task }) => {
   const [timer, setTimer] = useState(task?.timer ?? false);
   const [count, setCount] = useState(true);
   const [open, setOpen] = useState(false);
-  const [expired, setExpired] = useState(task?.isExpired ?? false);
+  const [expired, setExpired] = useState(task.isExpired || false);
   const [blinkText, setBlinkText] = useState(false);
 
   useEffect(() => {
-    if (!count && !expired) {
-      const updateExpired = async () => {
-        try {
-          setExpired(true);
-          const object = { id: task?._id, isExpired: true };
-          await updateExpiredTask(object);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      updateExpired();
-    } else if (count && expired) {
+    if (timer) {
+      // if(count && !expired) toast.error('Task ini sudah melewati batas deadline')
+      if (!count && !expired) {
+        const updateExpired = async () => {
+          try {
+            setExpired(true);
+            const object = { id: task?._id, isExpired: true, blink: false };
+            await updateExpiredTask(object);
+          } catch (error) {
+            console.log(error);
+          }
+        };
+        updateExpired();
+      } 
+    } else if(!timer && task.isExpired) {
       const updateExpired = async () => {
         try {
           setExpired(false);
@@ -54,6 +57,8 @@ const TaskCard = ({ task }) => {
         }
       };
       updateExpired();
+    } else if (!timer) {
+      
     }
   }, [count]);
 
@@ -101,6 +106,7 @@ const TaskCard = ({ task }) => {
       if (endDeadline >= endDate) {
         if (midleDeadline >= middleDate) {
           if (startDeadline >= startDate) {
+            setCount('string');
             return;
           }
         }
@@ -111,8 +117,12 @@ const TaskCard = ({ task }) => {
     }, 1000);
   };
 
-  const handleBlinkText = () => {
+  const handleBlinkText = async() => {
     if (currentDate == deadlineTimeReverse) {
+      const object = { id: task?._id, blink:true };
+      if(!task.blink) {
+        await updateExpiredTask(object);
+      }
       blinkRef.current = setInterval(() => {
         setBlinkText((prev) => !prev);
       }, 650);
@@ -199,9 +209,9 @@ const TaskCard = ({ task }) => {
           </div>
         ) : (
           <div className={`w-full opacity-0 pb-2 text-xl ${expired ? 'line-through' : ''}`}>
-          <span className="font-semibold text-red-800">Deadline: </span>
-          <span className={`font-bold ${blinkText ? 'text-red-700' : ''}`}>{task?.deadline.slice(0, 10)}</span>
-        </div>
+            <span className="font-semibold text-red-800">Deadline: </span>
+            <span className={`font-bold ${blinkText ? 'text-red-700' : ''}`}>{task?.deadline.slice(0, 10)}</span>
+          </div>
         )}
       </div>
       <AddSubTask open={open} setOpen={setOpen} id={task._id} />

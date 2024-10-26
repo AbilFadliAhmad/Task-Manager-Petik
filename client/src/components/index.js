@@ -36,5 +36,6 @@ import Footer from './Footer';
 import Loading2 from './Loading2';
 import DetailsLog from './DetailsLog';
 import ShowMenu from './ShowMenu';
+import Filtering from './Filtering';
 
-export { DetailsLog, ShowMenu, ConfirmationDialog, Loading2, Button, AddSubTask, ModalWrapper, Activities, AddTask, Navbar, Card, Sidebar, Textbox, Layout, Tabs, UserAvatar, MobileSidebar, NotificationPanel, ViewNotification, Chart, Table, SelectList, TaskTable, UserInfo, TaskCard, AddUser, UserTable, Profile, Password, TaskDialog, Title, BoardView, Loading, TaskTitle, AdminList, SelectListDuplicate, UserList, Footer };
+export { DetailsLog, Filtering, ShowMenu, ConfirmationDialog, Loading2, Button, AddSubTask, ModalWrapper, Activities, AddTask, Navbar, Card, Sidebar, Textbox, Layout, Tabs, UserAvatar, MobileSidebar, NotificationPanel, ViewNotification, Chart, Table, SelectList, TaskTable, UserInfo, TaskCard, AddUser, UserTable, Profile, Password, TaskDialog, Title, BoardView, Loading, TaskTitle, AdminList, SelectListDuplicate, UserList, Footer };

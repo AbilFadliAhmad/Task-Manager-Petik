@@ -29,7 +29,6 @@ const NotificationPanel = () => {
   useEffect(() => {
     if(!isLoading && data?.notification?.length > 0) {
       const condition = data?.notification.filter(item=>!item.isSeen.includes(user?._id)).length
-      console.log(condition, 'condition')
       if(condition > 0 && !seen) {
 
         toast.custom((t) => (

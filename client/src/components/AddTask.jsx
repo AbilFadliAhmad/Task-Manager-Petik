@@ -56,8 +56,8 @@ const AddTask = ({ task: task1, open, setOpen }) => {
         form.append('date', data.date);
         form.append('priority', priority);
         form.append('stage', stage);
-        form.append('team', team ?? []);
-        form.append('leader', leader);
+        form.append('team', team.map((item) => item._id) ?? []);
+        form.append('leader', leader.map((item) => item._id) ?? []);
         form.append('image', assets);
         form.append('timer', check);
         check && data.deadline.length > 0 ? form.append('deadline', data.deadline) : form.append('deadline', []);
@@ -92,15 +92,15 @@ const AddTask = ({ task: task1, open, setOpen }) => {
         form.append('date', data.date);
         form.append('priority', priority);
         form.append('stage', stage);
-        form.append('team', team ?? []);
-        form.append('leader', leader ?? []);
+        form.append('team', team.map((item) => item._id) ?? []);
+        form.append('leader', leader.map((item) => item._id) ?? []);
         form.append('id', data._id);
         form.append('image', assets);
         if(!user?.isAdmin) {
           null
         } else if(user?.isAdmin && currentDate == date) {
           form.append('timer', check);
-          data.deadline.length > 0 && check ? form.append('deadline', data.deadline) : form.append('deadline', []);
+          data.deadline.length > 0 && check ? form.append('deadline', data.deadline) : !check ? form.append('deadline', '2174-12-23') : form.append('deadline', []);
         }
         await udpateTask(form)
           .unwrap()
@@ -115,7 +115,7 @@ const AddTask = ({ task: task1, open, setOpen }) => {
       } catch (error) {
         toast.dismiss(toastD);
         setButtonLoading(false);
-        toast.error(error.data.message);
+        toast.error('Pastikan internetmu stabil');
         console.log(error);
       }
     }
@@ -149,7 +149,7 @@ const AddTask = ({ task: task1, open, setOpen }) => {
               <SelectList theme={theme} selected={stage} setSelected={setStage} label={'Task Stage'} lists={LISTS} />
 
               <div className="w-full">
-                <Textbox placeholder={'date'} type="date" name="date" label={'Task Date'} className="w-full rounded" register={register('date', { required: 'Date is required' })} error={errors.date ? errors.date.message : ''} theme={theme} />
+                <Textbox placeholder={'date'} type="date" name="date" label={'Task Date'} className="w-full rounded" register={register('date', { required: 'Date is required' })} error={errors.date ? errors.date.message : ''} theme={theme} status={user} />
               </div>
             </div>
             <div className="flex gap-4">

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { MdDelete, MdKeyboardArrowDown, MdKeyboardArrowUp, MdKeyboardDoubleArrowUp, MdOutlineRestore } from 'react-icons/md';
-import { AddUser, Button, ConfirmationDialog, Loading2, Title } from '../components';
+import { AddUser, Button, ConfirmationDialog, Footer, Loading2, Title } from '../components';
 import { tasks } from '../assets/data';
 import { loadingDatab, PRIOTITYSTYELS, TASK_TYPE } from '../utils';
 import clsx from 'clsx';
 import { useDeleteTaskMutation, useListTaskMutation } from '../redux/slices/TaskApiSlice';
 import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
+import { useLocation } from 'react-router-dom';
 
 const ICONS = {
   high: <MdKeyboardDoubleArrowUp />,
@@ -25,6 +26,11 @@ const Trash = () => {
   const [searching, setSearching] = useState(search || '');
   const [tasks, setTasks] = useState([]);
   const [selected, setSelected] = useState('');
+  const itemPerPage = 5;
+  const query = new URLSearchParams(useLocation().search);
+  const [halaman, setHalaman] = useState(parseInt(query.get('halaman')) || 1);
+  const [jumlahHalaman, setJumlahHalaman] = useState(1);
+  const awalItem = (halaman - 1) * itemPerPage;
 
   const deleteAllClick = () => {
     setType('deleteAll');
@@ -64,11 +70,12 @@ const Trash = () => {
   };
 
   const deleteRestoreHandler = async () => {
+    let l = toast.loading('Menghapus Data...');
     try {
       const properti = { id: selected.id, action: type };
-      loadingDatab(
-        deleteTask(properti),
-        `${
+      await deleteTask(properti);
+      toast.dismiss(l);
+      toast.success(`${
           type == 'restore'
             ? `Berhasil Memulihkan Tugas berjudul: ${selected?.name}`
             : type == 'delete'
@@ -76,8 +83,15 @@ const Trash = () => {
             : type == 'restoreAll'
             ? 'Berhasil Memulihkan semua Tugas'
             : 'Berhasil menghapus permanen semua Tugas'
-        }`,
-        `${
+        }`);
+      setOpen(false);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } catch (error) {
+      console.log(error);
+      toast.dismiss(l);
+      toast.error(`${
           type == 'restore'
             ? `Gagal Memulihkan Tugas berjudul: ${selected?.name}`
             : type == 'delete'
@@ -85,28 +99,24 @@ const Trash = () => {
             : type == 'restoreAll'
             ? 'Gagal Memulihkan semua Tugas'
             : 'Gagal menghapus permanen semua Tugas'
-        }`
-      )
-        .then(() => setOpen(false))
-        .then(() =>
-          setTimeout(() => {
-            window.location.reload();
-          }, 1800)
-        );
-    } catch (error) {
-      console.log(error);
-      toast.error('Gagal Menghapus Tugas');
+        }`);
     }
   };
 
   useEffect(() => {
     const fetchingData = async () => {
-      const object = { isTrashed: true, search };
+      const object = { isTrashed: true, search, path: 'trash', itemPerPage, awalItem };
       const result = await dataList(object).unwrap();
       await setTasks(result.data);
     };
     fetchingData();
   }, [search]);
+
+  useEffect(() => {
+    if(tasks?.length > 0){
+      setJumlahHalaman(Math.ceil(tasks.length / itemPerPage));
+    }
+  }, [tasks])
 
   const TableHeader = () => (
     <thead className={`w-full border-b ${theme.darkMode ? 'border-white text-white' : 'border-gray-300'}`}>
@@ -154,7 +164,7 @@ const Trash = () => {
           <Title title="Trashed Tasks" className={`${theme.darkMode ? 'text-white' : ''}`} />
 
           <div className="flex gap-2 md:gap-4 items-center mt-4 md:mt-0">
-            {tasks?.length > 0 && (
+            {tasks?.length > 1 && (
               <>
                 <Button
                   label="Restore All"
@@ -184,7 +194,13 @@ const Trash = () => {
               placeholder="Search..."
               className="w-full p-2 pl-10 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
-            <svg className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${theme.darkMode ? ' text-black' : 'text-gray-400'} `} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" onClick={handleSearch}>
+            <svg
+              className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${theme.darkMode ? ' text-black' : 'text-gray-400'} `}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              onClick={handleSearch}
+            >
               <path fillRule="evenodd" d="M12.9 14.32a8 8 0 111.414-1.414l4.387 4.387a1 1 0 01-1.414 1.414l-4.387-4.387zM8 14a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />
             </svg>
           </div>
@@ -202,6 +218,7 @@ const Trash = () => {
             </table>
           </div>
         </div>
+        {tasks.length > 0 && <Footer halaman={halaman} jumlahHalaman={jumlahHalaman} />}
       </div>
 
       <AddUser open={open} setOpen={setOpen} />

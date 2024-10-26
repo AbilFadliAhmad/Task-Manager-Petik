@@ -33,7 +33,7 @@ const Footer = ({jumlahHalaman, halaman}) => {
               <FaArrowLeft className='text-lg' />
               <span  className='text-xl'>Sebelumnya</span>
             </div>
-            <div onClick={tambahkanHalaman} className={`flex gap-2 items-center cursor-pointer hover:text-[#326cd1] ${halaman + 1 > jumlahHalaman ? 'invisible' : ''}`}>
+            <div onClick={tambahkanHalaman} className={`flex gap-2 items-center cursor-pointer hover:text-[#326cd1] ${jumlahHalaman <= 1 ? 'invisible' : ''}`}>
               <span className='text-xl'>Selanjutnya</span>
               <FaArrowRight className='text-lg' />
             </div>

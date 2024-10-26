@@ -55,9 +55,10 @@ const Activities = ({ activity, id, stage }) => {
   let toastD;
 
   const handleSubmit = async () => {
+    if (text == '') return toast.error('Text Tidak Boleh Kosong');
+    
     try {
-      if (text == '') return toast.error('Text Tidak Boleh Kosong');
-      setIsLoading('oke gan');
+      setIsLoading(true);
       toastD = toast.loading('Sedang mencoba menambahkan data...');
       const data = { activity: String(text), type: String(selected), id: String(taskId) };
       if (data.type.toLocaleLowerCase() !== 'assigned' && data.type.toLocaleLowerCase() !== 'completed' && stage !== 'in progress') {
@@ -147,7 +148,7 @@ const Activities = ({ activity, id, stage }) => {
             {text.length > 3 && (
               <p className="block mb-5 text-md font-semibold text-red-500">Pastikan Sebelum menekan tombol submit, tekan tombol refresh dan juga perhatikan terlebih dahulu aktivitas yang telah Ditambahkan user lain</p>
             )}
-            <Button type="button" label="Submit" onClick={handleSubmit} className="bg-blue-600 text-white rounded-md w-[10rem]" />
+            <Button type="button" isLoading={isLoading} label="Submit" onClick={handleSubmit} className="bg-blue-600 disabled:opacity-30 text-white rounded-md w-[10rem]" />
           </div>
         </div>
       </div>

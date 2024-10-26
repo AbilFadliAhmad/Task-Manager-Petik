@@ -44,7 +44,7 @@ export default function ConfirmationDialog({ open, setOpen, msg, setMsg = () => 
   );
 }
 
-export function UserAction({ open, setOpen, onClick = () => {}, status, theme }) {
+export function UserAction({ open, setOpen, onClick = () => {}, status, theme, isLoading }) {
   const closeDialog = () => {
     setOpen(false);
   };
@@ -62,7 +62,7 @@ export function UserAction({ open, setOpen, onClick = () => {}, status, theme })
           <p className={`text-center ${theme.darkMode ? 'text-white' : 'text-gray-500'}`}>{`Apakah kamu yakin ingin ${status ? 'Menonaktifkan' : 'Mengaktifkan'} akun ini?`}</p>
 
           <div className={`${theme.darkMode ? 'bg-gray-900' : 'bg-gray-50'} py-3 sm:flex sm:flex-row-reverse gap-4`}>
-            <Button type="button" className={clsx(' px-8 text-sm font-semibold text-white sm:w-auto', 'bg-red-600 hover:bg-red-500')} onClick={onClick} label={'Yes'} />
+            <Button isLoading={isLoading || false} type="button" className={clsx(' px-8 text-sm font-semibold text-white sm:w-auto', 'bg-red-600 hover:bg-red-500')} onClick={onClick} label={'Yes'} />
 
             <Button type="button" className="bg-white px-8 text-sm font-semibold text-gray-900 sm:w-auto border" onClick={() => closeDialog()} label="No" />
           </div>

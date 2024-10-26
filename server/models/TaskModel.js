@@ -4,7 +4,7 @@ const taskSchema = new mongoose.Schema({
     title: {type:String, required:true},
     date: {type:Date, default:new Date()},
     priority: {type:String, default:'normal', enum:['low', 'normal', 'high', 'medium']},
-    stage: {type:String, default:'todo', enum:['todo', 'in progress', 'completed', 'expired']},
+    stage: {type:String, default:'todo', enum:['todo', 'in progress', 'completed']},
     activities: [{
         type:{type:String, default:'assigned', enum:['started', 'commented', 'completed', 'bug', 'in progress', 'assigned']},
         activity: String,
@@ -18,6 +18,7 @@ const taskSchema = new mongoose.Schema({
     isTrashed: {type: Boolean, default: false},
     timer: {type: Boolean, default: false},
     isExpired: {type: Boolean, default: false},
+    blink: {type: Boolean, default: false},
     deadline: {type:Date, default:new Date(new Date().setFullYear(new Date().getFullYear() + 150))},
 
 }, {timestamps:true})

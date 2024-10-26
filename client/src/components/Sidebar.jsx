@@ -15,41 +15,49 @@ const linkData = [
     label: 'Dashboard',
     link: 'dashboard',
     icon: <MdDashboard />,
+    mark: 'dashboard',
   },
   {
     label: 'Tasks',
     link: 'tasks',
     icon: <FaTasks />,
+    mark: 'tasks',
   },
   {
     label: 'Completed',
     link: 'completed/completed',
     icon: <MdTaskAlt />,
+    mark: 'completed',
   },
   {
     label: 'In Progress',
     link: 'in-progress/in progress',
     icon: <MdOutlinePendingActions />,
+    mark: 'in-progress',
   },
   {
     label: 'To Do',
     link: 'todo/todo',
     icon: <MdOutlinePendingActions />,
+    mark: 'todo',
   },
   {
     label: 'Team',
     link: 'team',
     icon: <FaUsers />,
+    mark: 'team',
   },
   {
     label: 'Trash',
     link: 'trashed',
     icon: <FaTrashAlt />,
+    mark: 'trashed',
   },
   {
     label: 'Activity Log',
     link: 'activity',
     icon: <MdOutlineHistory />,
+    mark: 'activity',
   },
 ];
 
@@ -59,6 +67,7 @@ const Sidebar = () => {
   const location = useLocation();
   const path = location.pathname.split('/')[1];
   const sidebarLinks = user?.isAdmin ? linkData : user?.isUstadz ? linkData.slice(0, 6) : linkData.slice(0, 5);
+  const currentLink = sidebarLinks.find((link) => link.mark == path)?.mark;
   
   const items = [
     {
@@ -77,11 +86,13 @@ const Sidebar = () => {
     localStorage.setItem('search', '');
     localStorage.setItem('searchLogs', '');
     localStorage.setItem('halaman', '1');
+    localStorage.setItem('filteringData', '[]');
+    // path == currentLink && window.location.reload();
   };
 
-  const stillOpen = () => {
-    dispatch(setOpenSidebar(true));
-  }
+  // const stillOpen = () => {
+  //   dispatch(setOpenSidebar(true));
+  // }
 
   const NavLink = ({ el }) => {
     return (
@@ -113,8 +124,10 @@ const Sidebar = () => {
 
       <div>
         <ShowMenu
+        theme={theme}
+        special={true}
           icon={
-            <button className={`w-full flex gap-2 p-2 items-center text-lg ${theme.darkMode ? 'text-white hover:text-blue-700' : 'text-gray-800 hover:text-blue-700'}`}>
+            <button className={`w-full flex gap-2 p-2 items-center text-lg ${theme.darkMode ? 'text-white hover:text-blue-700' : 'text-gray-800 hover:text-blue-700'}`}>  
               <MdSettings />
               <span>Settings</span>
             </button>
@@ -128,7 +141,7 @@ const Sidebar = () => {
                   <button
                     onClick={el?.onClick}
                     className={`${
-                      active ? "bg-blue-500 text-neutral-100" : "text-white"
+                      active ? "bg-blue-500 text-neutral-100" : ""
                     } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                   >
                     {el.icon}

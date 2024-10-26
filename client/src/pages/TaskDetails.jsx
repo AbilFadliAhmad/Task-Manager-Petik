@@ -5,14 +5,15 @@ import { FaBug, FaTasks, FaThumbsUp, FaUser } from 'react-icons/fa';
 import { GrInProgress } from 'react-icons/gr';
 import { MdKeyboardArrowDown, MdKeyboardArrowUp, MdKeyboardDoubleArrowUp, MdOutlineDoneAll, MdOutlineMessage, MdTaskAlt } from 'react-icons/md';
 import { RxActivityLog } from 'react-icons/rx';
-import { useParams } from 'react-router-dom';
-import { Loading, Button, Activities, Loading2 } from '../components';
+import { useNavigate, useParams } from 'react-router-dom';
+import {  Button, Activities, Loading2 } from '../components';
 import Tabs from '../components/Tabs';
 import { PRIOTITYSTYELS, TASK_TYPE, getInitials } from '../utils';
 import { tasks } from '../assets/data';
 import { useGetTaskQuery } from '../redux/slices/TaskApiSlice';
 import { useSelector } from 'react-redux';
 import { FiRefreshCcw } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 // import { useGetSingleTaskQuery, usePostTaskActivityMutation } from '../redux/slices/api/taskApiSlice';
 
 const assets = [
@@ -75,14 +76,25 @@ const TASKTYPEICON = {
 const act_types = ['Started', 'Completed', 'In Progress', 'Commented', 'Bug', 'Assigned'];
 const TaskDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate()
   const {data, isLoading, refetch: refetchitem} = useGetTaskQuery({id});
-  const {theme} = useSelector(state => state.auth)
-  const [loading, setLoading] = useState(false)
+  const {theme, user} = useSelector(state => state.auth)
+  const [expired, setExpired] = useState(false)
+  console.log(data?.task.isExpired,'expired');
   
   const [selected, setSelected] = useState(parseInt(localStorage.getItem('selected')) || 0);
   let task = data?.task ?? [];
 
-  return !loading ? (
+  useEffect(() => {
+    if (data?.task?.isExpired && !user.isAdmin) {
+      navigate('/tasks')
+      toast.error('Tugas sudah kadaluarsa')
+    } else if (data?.task.isExpired) {
+      setExpired(true)
+    }
+  });
+
+  return !isLoading ? (
     <div className="w-full flex flex-col gap-3 mb-4 overflow-y-hidden p-4">
       <div className='flex justify-between'>
         <h1 className={`text-2xl ${theme?.darkMode ? 'text-white' : 'text-gray-600'} font-bold`}>{task?.title}</h1>
@@ -158,7 +170,7 @@ const TaskDetails = () => {
             </div>
           </>
         ) : (
-          <div><Activities activity={task?.activities} stage={task?.stage} id={id} /></div>
+          <div><Activities navigate={navigate} activity={task?.activities} stage={task?.stage} id={id} /></div>
         )}
       </Tabs>
     </div>

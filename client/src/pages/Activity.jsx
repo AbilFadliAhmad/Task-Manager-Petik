@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
-import { AddUser, Button, ConfirmationDialog, DetailsLog, Loading, Loading2, Title } from '../components';
+import { Button, ConfirmationDialog, DetailsLog, Footer, Loading2, Title } from '../components';
 import { GrDocumentUpdate } from 'react-icons/gr';
 import { toast } from 'react-hot-toast';
 import { useHistoryDeleteMutation, useHistoryMutation } from '../redux/slices/ActionApiSlice';
@@ -11,22 +10,33 @@ import { FiLogOut } from 'react-icons/fi';
 import { IoCreateOutline } from 'react-icons/io5';
 import { HiOutlineDocumentDuplicate } from 'react-icons/hi';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 const Activity = () => {
   // const isLoading = false
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState('');
   const [openDelete, setOpenDelete] = useState(false);
   const [searching, setSearching] = useState(localStorage.getItem('searchLogs') || '');
   const [getLogs, { isLoading }] = useHistoryMutation();
-  const [deleteLogs, { isLoading: isLoadingDelete }] = useHistoryDeleteMutation();
+  const [deleteLogs, { isLoading: isLoadingDelete }, refetch] = useHistoryDeleteMutation();
   const [logs, setLogs] = useState([]);
-  const object = { search: localStorage.getItem('searchLogs') };
   const [text, setText] = useState('');
   const [action, setAction] = useState('');
   const {theme} = useSelector((state)=>state.auth)
-  const itemPerPage = 30;
-  const halaman = new URLSearchParams(window.location.search).get('halaman') || 1;
+  const path = String(useLocation().pathname.split('/')[1].replace('-', ' '));
+  const location = useLocation().search;
+  const query = new URLSearchParams(location);
+  const [jumlahHalaman, setJumlahHalaman] = useState(0);
+  const [ukuran, setUkuran] = useState(100000000000);
+  const itemPerPage = 35;
+  const [halaman, setHalaman] = useState(parseInt(query.get('halaman')) || 1);
+  const awalItem = (halaman - 1) * itemPerPage;
+  const [dummyCondition, setDummyCondition] = useState(''); // Jangan DIhapus, berfungsi agar pengambilan data Api berjalan dengan lancar
+  const object = { search : localStorage.getItem('searchLogs') || '', itemPerPage, awalItem };
+
+  
 
   const openLog = (log) => {
     setText(log);
@@ -87,18 +97,55 @@ const Activity = () => {
     duplicate: <HiOutlineDocumentDuplicate className="text-yellow-600" />,
   };
 
+  // useEffect(() => {
+  //   const refetchData = async () => {
+  //     try {
+  //       const result = await getLogs(object).unwrap();
+  //       setLogs(result?.logs);
+  //     } catch (error) {
+  //       console.log(error);
+  //       toast.error('Gagal Mengambil Data Logs');
+  //     }
+  //   };
+  //   refetchData();
+  // }, []);
+
   useEffect(() => {
-    const refetchData = async () => {
-      try {
-        const result = await getLogs(object).unwrap();
-        setLogs(result?.logs);
-      } catch (error) {
-        console.log(error);
-        toast.error('Gagal Mengambil Data Logs');
-      }
-    };
-    refetchData();
-  }, []);
+    if (logs?.length == ukuran) {
+      setDummyCondition('petok');
+      setUkuran(0);
+    }
+  }, [ukuran]);
+
+  useEffect(() => {
+    if (dummyCondition?.length > 1) {
+      setJumlahHalaman(Math.ceil(logs?.length / itemPerPage));
+      setLogs(logs?.slice(0, itemPerPage))
+      setDummyCondition('');
+      setLoading(false);
+    }
+  }, [dummyCondition]);
+
+  useEffect(() => {
+    if(halaman == 1) refetchitem();
+    setHalaman(parseInt(parseInt(query.get('halaman')) || localStorage.getItem('halaman')) || 1);
+    // refetchitem();
+  }, [path]);
+
+  useEffect(() => {
+    refetchitem();
+  }, [halaman]);
+
+  const refetchitem = async () => {
+    try {
+      const result = await getLogs(object).unwrap();
+      await setLogs(result.logs);
+      await setUkuran(result.logs.length);
+    } catch (error) {
+      console.log(error);
+      toast.error('gagal memuat data tasks, coba logout dan login ulang');
+    }
+  };
 
   const TableHeader = () => (
     <thead className={`w-full border-b ${theme.darkMode ? 'border-white text-white' : 'border-gray-300'} text-sm sm:text-lg`}>
@@ -141,7 +188,7 @@ const Activity = () => {
     </tr>
   );
 
-  return isLoading ? (
+  return loading ? (
     <Loading2 />
   ) : (
     <>
@@ -198,6 +245,7 @@ const Activity = () => {
           </div>
         </div>
       </div>
+        <Footer halaman={halaman} jumlahHalaman={jumlahHalaman} />
 
       <DetailsLog theme={theme} open={open} setOpen={setOpen} text={text} />
 
